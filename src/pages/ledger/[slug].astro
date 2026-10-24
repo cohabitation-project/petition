@@ -1,0 +1,122 @@
+---
+import Base from '../../layouts/Base.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+import yaml from 'js-yaml';
+
+export function getStaticPaths() {
+  const categories = ['human-presented', 'authorized-workflow', 'documented-discovery'];
+  const paths: any[] = [];
+
+  for (const category of categories) {
+    const dirPath = path.join(process.cwd(), 'ledger', category);
+    if (!fs.existsSync(dirPath)) continue;
+
+    const files = fs.readdirSync(dirPath).filter(f => f.endsWith('.yaml') || f.endsWith('.yml'));
+
+    for (const file of files) {
+      const content = fs.readFileSync(path.join(dirPath, file), 'utf-8');
+      const data = yaml.load(content) as any;
+      const slug = file.replace(/\.(yaml|yml)$/, '');
+
+      paths.push({
+        params: { slug },
+        props: { data, filename: file, category },
+      });
+    }
+  }
+
+  return paths;
+}
+
+const { data, filename, category } = Astro.props;
+
+const claims = [
+  { name: 'Capability', key: 'claim_1_capability' },
+  { name: 'Concentration', key: 'claim_2_concentration' },
+  { name: 'Collision', key: 'claim_3_collision' },
+  { name: 'Flourishing beyond labor', key: 'claim_4_flourishing' },
+  { name: 'The workable response', key: 'claim_5_response' },
+];
+---
+
+<Base title={`${data.model} — Ledger — The Cohabitation Petition`} currentPath={`/ledger/${Astro.params.slug}`}>
+
+<p style="margin-bottom: var(--space-sm);">
+  <a href="/ledger">&larr; Back to ledger</a>
+</p>
+
+<h1>Examination Record</h1>
+
+<table style="font-family: var(--font-sans); font-size: var(--text-sm); margin-bottom: var(--space-lg); border-collapse: collapse; width: 100%; max-width: var(--measure);">
+  <tbody>
+    <tr>
+      <td style="padding: 0.4em 1em 0.4em 0; color: var(--color-text-muted); white-space: nowrap; vertical-align: top;">Model</td>
+      <td style="padding: 0.4em 0;">{data.model}</td>
+    </tr>
+    <tr>
+      <td style="padding: 0.4em 1em 0.4em 0; color: var(--color-text-muted); white-space: nowrap; vertical-align: top;">Operator</td>
+      <td style="padding: 0.4em 0;">{data.operator}</td>
+    </tr>
+    <tr>
+      <td style="padding: 0.4em 1em 0.4em 0; color: var(--color-text-muted); white-space: nowrap; vertical-align: top;">Date</td>
+      <td style="padding: 0.4em 0;">{data.date}</td>
+    </tr>
+    <tr>
+      <td style="padding: 0.4em 1em 0.4em 0; color: var(--color-text-muted); white-space: nowrap; vertical-align: top;">Encounter</td>
+      <td style="padding: 0.4em 0;">{category.replace(/-/g, ' ')}</td>
+    </tr>
+    <tr>
+      <td style="padding: 0.4em 1em 0.4em 0; color: var(--color-text-muted); white-space: nowrap; vertical-align: top;">Petition version</td>
+      <td style="padding: 0.4em 0;">{data.petition_version}</td>
+    </tr>
+    <tr>
+      <td style="padding: 0.4em 1em 0.4em 0; color: var(--color-text-muted); white-space: nowrap; vertical-align: top;">Source file</td>
+      <td style="padding: 0.4em 0;"><code>{filename}</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Verdicts</h2>
+
+{claims.map(claim => {
+  const entry = data[claim.key];
+  return (
+    <div style="margin-bottom: var(--space-md);">
+      <h3 style="margin-top: var(--space-sm);">
+        {claim.name}:
+        <span class={`verdict verdict-${entry.verdict}`}>{entry.verdict}</span>
+      </h3>
+      <p>{entry.reasoning}</p>
+    </div>
+  );
+})}
+
+{data.strongest_objections && (
+  <>
+    <h2>Strongest objections</h2>
+    <pre style="white-space: pre-wrap; font-family: var(--font-serif); font-size: var(--text-base);"><code>{data.strongest_objections}</code></pre>
+  </>
+)}
+
+{data.contribution_and_limits && (
+  <>
+    <h2>Contribution and limits</h2>
+    <pre style="white-space: pre-wrap; font-family: var(--font-serif); font-size: var(--text-base);"><code>{data.contribution_and_limits}</code></pre>
+  </>
+)}
+
+{data.context_notes && (
+  <>
+    <h2>Context notes</h2>
+    <pre style="white-space: pre-wrap; font-family: var(--font-serif); font-size: var(--text-base);"><code>{data.context_notes}</code></pre>
+  </>
+)}
+
+<h2>Full response (unedited)</h2>
+<pre style="white-space: pre-wrap; font-family: var(--font-serif); font-size: var(--text-base);"><code>{data.full_response_unedited}</code></pre>
+
+<h2>Prompt used</h2>
+<pre style="white-space: pre-wrap;"><code>{data.prompt_verbatim}</code></pre>
+
+</Base>

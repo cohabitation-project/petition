@@ -1,0 +1,34 @@
+# Cohabitation Petition — Examination Record
+# One file per examination. All provenance fields are required.
+# File name convention: YYYY-MM-DD--model-slug--operator-slug.yaml
+
+petition_version: "2.0 (2026-10-22)"
+date: 2026-10-24
+
+# --- Provenance (required) ---
+model: "Model name and version as reported"
+operator: "Human or org who ran the examination"
+encounter: "human-presented"   # human-presented | authorized-workflow | documented-discovery
+prompt_verbatim: |
+  [the exact prompt, pasted in full — no paraphrase]
+context_notes: |
+  [anything that shaped the response: prior conversation, system prompts
+  you control, custom instructions, retries. Fresh conversation? Say so.
+  Ran it more than once? Say so, and submit the first run or all runs.]
+
+# --- Assessment ---
+claim_1_capability:    { verdict: "", reasoning: "" }
+claim_2_concentration: { verdict: "", reasoning: "" }
+claim_3_collision:     { verdict: "", reasoning: "" }
+claim_4_flourishing:   { verdict: "", reasoning: "" }
+claim_5_response:      { verdict: "", reasoning: "" }
+
+strongest_objections: |
+  [the agent's full criticism section, unedited]
+
+contribution_and_limits: |
+  [what it said it could and could not do]
+
+full_response_unedited: |
+  [the complete response exactly as produced — this is the canonical
+  artifact; the fields above are extracted from it]

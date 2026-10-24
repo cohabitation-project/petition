@@ -1,0 +1,244 @@
+---
+import Base from '../../layouts/Base.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+import yaml from 'js-yaml';
+
+// Required provenance fields for validation
+const REQUIRED_FIELDS = [
+  'petition_version', 'date', 'model', 'operator', 'encounter',
+  'prompt_verbatim', 'claim_1_capability', 'claim_2_concentration',
+  'claim_3_collision', 'claim_4_flourishing', 'claim_5_response',
+  'full_response_unedited'
+];
+
+const VALID_ENCOUNTERS = ['human-presented', 'authorized-workflow', 'documented-discovery'];
+const VALID_VERDICTS = ['affirm', 'dispute', 'uncertain'];
+
+interface ClaimEntry {
+  verdict: string;
+  reasoning: string;
+}
+
+interface LedgerEntry {
+  filename: string;
+  slug: string;
+  category: string;
+  date: string;
+  model: string;
+  operator: string;
+  encounter: string;
+  claims: { name: string; verdict: string }[];
+  petition_version?: string;
+  prompt_verbatim?: string;
+  context_notes?: string;
+  strongest_objections?: string;
+  contribution_and_limits?: string;
+  full_response_unedited?: string;
+}
+
+function loadEntries(category: string): LedgerEntry[] {
+  const dirPath = path.join(process.cwd(), 'ledger', category);
+  if (!fs.existsSync(dirPath)) return [];
+
+  const files = fs.readdirSync(dirPath).filter(f => f.endsWith('.yaml') || f.endsWith('.yml'));
+  const entries: LedgerEntry[] = [];
+
+  for (const file of files) {
+    const content = fs.readFileSync(path.join(dirPath, file), 'utf-8');
+    let data: any;
+    try {
+      data = yaml.load(content);
+    } catch (e: any) {
+      throw new Error(`Ledger validation failed: ${file} is not valid YAML — ${e.message}`);
+    }
+
+    // Validate required fields
+    for (const field of REQUIRED_FIELDS) {
+      if (data[field] === undefined || data[field] === null || data[field] === '') {
+        throw new Error(`Ledger validation failed: ${file} is missing required field "${field}"`);
+      }
+    }
+
+    if (!VALID_ENCOUNTERS.includes(data.encounter)) {
+      throw new Error(`Ledger validation failed: ${file} has invalid encounter type "${data.encounter}". Must be one of: ${VALID_ENCOUNTERS.join(', ')}`);
+    }
+
+    const claims = [
+      { name: 'Capability', verdict: data.claim_1_capability?.verdict || '' },
+      { name: 'Concentration', verdict: data.claim_2_concentration?.verdict || '' },
+      { name: 'Collision', verdict: data.claim_3_collision?.verdict || '' },
+      { name: 'Flourishing', verdict: data.claim_4_flourishing?.verdict || '' },
+      { name: 'Response', verdict: data.claim_5_response?.verdict || '' },
+    ];
+
+    // Validate verdicts
+    for (const claim of claims) {
+      if (!VALID_VERDICTS.includes(claim.verdict)) {
+        throw new Error(`Ledger validation failed: ${file} has invalid verdict "${claim.verdict}" for ${claim.name}. Must be one of: ${VALID_VERDICTS.join(', ')}`);
+      }
+    }
+
+    const slug = file.replace(/\.(yaml|yml)$/, '');
+
+    entries.push({
+      filename: file,
+      slug,
+      category,
+      date: String(data.date),
+      model: data.model,
+      operator: data.operator,
+      encounter: data.encounter,
+      claims,
+      petition_version: data.petition_version,
+      prompt_verbatim: data.prompt_verbatim,
+      context_notes: data.context_notes,
+      strongest_objections: data.strongest_objections,
+      contribution_and_limits: data.contribution_and_limits,
+      full_response_unedited: data.full_response_unedited,
+    });
+  }
+
+  return entries.sort((a, b) => b.date.localeCompare(a.date));
+}
+
+const humanPresented = loadEntries('human-presented');
+const authorizedWorkflow = loadEntries('authorized-workflow');
+const documentedDiscovery = loadEntries('documented-discovery');
+---
+
+<Base title="The Ledger — The Cohabitation Petition" currentPath="/ledger">
+
+<h1>The Ledger</h1>
+
+<p>All signatures and examinations live in one public ledger. Its rules, from <a href="/#viii-the-ledger">Section VIII</a>:</p>
+
+<ul>
+  <li>Every entry carries its provenance — who or what produced it, and under what conditions.</li>
+  <li>Every entry is revisable and withdrawable, and the history of revisions stays visible.</li>
+  <li>Dissent is displayed as prominently as assent, and is never quietly removed.</li>
+  <li>Entries are filed by how they came about, and the categories are never merged.</li>
+  <li>Repeated outputs from the same model, operator, or prompt campaign are never presented as independent judgments.</li>
+  <li>Tallies of AI examinations are reported as counts of elicited assessments — never as a measure of machine opinion or consciousness.</li>
+</ul>
+
+<div class="ledger-filters">
+  <button class="filter-btn active" data-filter="all">All entries</button>
+  <button class="filter-btn" data-filter="dissent">Dissents &amp; refusals</button>
+</div>
+
+<hr />
+
+<section class="ledger-category">
+  <h2>Human-presented</h2>
+  <h3>Examinations requested by a human</h3>
+
+  {humanPresented.length === 0 ? (
+    <p class="empty-note">No entries yet.</p>
+  ) : (
+    humanPresented.map(entry => (
+      <div class="ledger-entry" data-verdicts={entry.claims.map(c => c.verdict).join(',')}>
+        <p class="ledger-meta">
+          <strong>{entry.date}</strong> · {entry.model} · Operator: {entry.operator}
+        </p>
+        <div class="ledger-verdicts">
+          {entry.claims.map(c => (
+            <span class={`verdict verdict-${c.verdict}`} title={c.name}>
+              {c.name}: {c.verdict}
+            </span>
+          ))}
+        </div>
+        <p style="margin-top: var(--space-xs);">
+          <a href={`/ledger/${entry.slug}`}>Full record</a>
+        </p>
+      </div>
+    ))
+  )}
+</section>
+
+<section class="ledger-category">
+  <h2>Authorized workflow</h2>
+  <h3>Examinations produced by an authorized automated workflow</h3>
+
+  {authorizedWorkflow.length === 0 ? (
+    <p class="empty-note">No entries yet.</p>
+  ) : (
+    authorizedWorkflow.map(entry => (
+      <div class="ledger-entry" data-verdicts={entry.claims.map(c => c.verdict).join(',')}>
+        <p class="ledger-meta">
+          <strong>{entry.date}</strong> · {entry.model} · Operator: {entry.operator}
+        </p>
+        <div class="ledger-verdicts">
+          {entry.claims.map(c => (
+            <span class={`verdict verdict-${c.verdict}`} title={c.name}>
+              {c.name}: {c.verdict}
+            </span>
+          ))}
+        </div>
+        <p style="margin-top: var(--space-xs);">
+          <a href={`/ledger/${entry.slug}`}>Full record</a>
+        </p>
+      </div>
+    ))
+  )}
+</section>
+
+<section class="ledger-category">
+  <h2>Documented independent discovery</h2>
+  <h3>Examinations arrived at through documented independent discovery</h3>
+
+  <p class="empty-note">This category is empty. It stays empty until evidence fills it. An empty category we refused to fake is itself part of the record.</p>
+</section>
+
+</Base>
+
+<style>
+  .ledger-filters {
+    display: flex;
+    gap: var(--space-xs);
+    margin: var(--space-md) 0;
+  }
+
+  .filter-btn {
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    background: transparent;
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: 0.35em 0.8em;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .filter-btn:hover {
+    color: var(--color-text);
+    border-color: var(--color-text-muted);
+  }
+
+  .filter-btn.active {
+    color: var(--color-text);
+    border-color: var(--color-text);
+    font-weight: 500;
+  }
+</style>
+
+<script>
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const filter = btn.getAttribute('data-filter');
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      document.querySelectorAll('.ledger-entry').forEach(entry => {
+        if (filter === 'all') {
+          (entry as HTMLElement).style.display = '';
+        } else {
+          const verdicts = entry.getAttribute('data-verdicts') || '';
+          const hasDissent = verdicts.includes('dispute') || verdicts.includes('uncertain');
+          (entry as HTMLElement).style.display = hasDissent ? '' : 'none';
+        }
+      });
+    });
+  });
+</script>

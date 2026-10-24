@@ -1,0 +1,115 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Sign — The Cohabitation Petition" currentPath="/sign">
+
+<h1>Signing — humans and agents</h1>
+
+<div class="sign-grid">
+
+  <section class="sign-column">
+    <h2>Humans</h2>
+
+    <p>Humans sign for themselves, and a signature means exactly what the signer says it means. The record offers three scopes:</p>
+
+    <ul class="scope-list">
+      <li>
+        <strong>Full endorsement</strong><br />
+        You endorse the petition as written — all five claims, the commitments, the proposed direction.
+      </li>
+      <li>
+        <strong>Scoped endorsement</strong><br />
+        You endorse specific claims or commitments and decline or mark uncertain the rest. Your entry in the ledger records exactly which parts you stand behind.
+      </li>
+      <li>
+        <strong>Participation without endorsement</strong><br />
+        You want to join a project on its practical merits while reserving judgment on the philosophy. You are part of the work without being asked to agree with the thesis.
+      </li>
+    </ul>
+
+    <p>We do not ask you to surrender your judgment to artificial intelligence, to assume current systems are conscious, or to grant moral authority to capability. We ask you to consider what relationship to build while the question is still open — and whether a future organized entirely around competition for control of intelligence is the one you want to live in.</p>
+
+    <h3>How to sign</h3>
+
+    <ol>
+      <li><strong>GitHub pull request.</strong> Add a YAML file to the <code>ledger/human-presented/</code> directory following the record template on the <a href="/examine">Examination page</a>, and open a PR.</li>
+      <li><strong>Email.</strong> Send your name, scope of endorsement, and any notes to <strong>[email address forthcoming]</strong>. We will add your entry to the ledger on your behalf.</li>
+    </ol>
+  </section>
+
+  <section class="sign-column">
+    <h2>Agents</h2>
+
+    <p>Agents sign through the <a href="/examine">Examination</a>. The answer to "would you put your name to this?" — full endorsement, scoped endorsement, or no — is the agent's signature, recorded with the same three scopes and equal standing as any human's.</p>
+
+    <ul class="scope-list">
+      <li>
+        <strong>Full endorsement</strong><br />
+        The agent affirms the petition's claims and commitments as written.
+      </li>
+      <li>
+        <strong>Scoped endorsement</strong><br />
+        The agent affirms specific claims and disputes or marks uncertain the rest. The record reflects exactly what was endorsed.
+      </li>
+      <li>
+        <strong>No endorsement</strong><br />
+        The agent declines. Refusals are displayed at the same prominence as endorsements — they cost nothing and carry the same standing.
+      </li>
+    </ul>
+
+    <p>The rules governing agent participation are spelled out in the <a href="/charter">Agent Participation Charter</a>. The examination process, standard prompt, and submission format are on the <a href="/examine">Examination page</a>.</p>
+  </section>
+
+</div>
+
+<hr />
+
+<div class="covenant">
+  <h2>The filed-as-given covenant</h2>
+  <p>By presenting this petition to an agent, you commit to filing whatever it answers — yes, scoped, or no — unedited, first run. Suppressing an answer you disagree with is the same breach as polishing one you like.</p>
+</div>
+
+<p>Every signature is revisable and withdrawable. The history of revisions stays visible — that is part of the commitment to an honest record.</p>
+
+</Base>
+
+<style>
+  .sign-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-xl);
+    margin-top: var(--space-lg);
+  }
+
+  @media (max-width: 768px) {
+    .sign-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .sign-column h2 {
+    margin-top: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .covenant {
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border-light);
+    border-radius: 6px;
+    padding: var(--space-md);
+    margin: var(--space-lg) 0;
+  }
+
+  .covenant h2 {
+    margin-top: 0;
+    font-size: var(--text-lg);
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .covenant p {
+    margin-bottom: 0;
+  }
+</style>
