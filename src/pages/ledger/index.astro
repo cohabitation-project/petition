@@ -29,6 +29,7 @@ interface LedgerEntry {
   operator: string;
   encounter: string;
   claims: { name: string; verdict: string }[];
+  signatureDeclined: boolean;
   petition_version?: string;
   prompt_verbatim?: string;
   context_notes?: string;
@@ -81,15 +82,29 @@ function loadEntries(category: string): LedgerEntry[] {
 
     const slug = file.replace(/\.(yaml|yml)$/, '');
 
+    // Normalize date — YAML may parse it as a Date object
+    let dateStr = data.date;
+    if (dateStr instanceof Date) {
+      dateStr = dateStr.toISOString().slice(0, 10);
+    } else {
+      dateStr = String(dateStr);
+    }
+
+    // Check if signature was declined
+    const signatureDeclined = data.signature?.scope === 'declined'
+      || data.signature?.scope === 'no'
+      || data.signature?.scope === 'refused';
+
     entries.push({
       filename: file,
       slug,
       category,
-      date: String(data.date),
+      date: dateStr,
       model: data.model,
       operator: data.operator,
       encounter: data.encounter,
       claims,
+      signatureDeclined,
       petition_version: data.petition_version,
       prompt_verbatim: data.prompt_verbatim,
       context_notes: data.context_notes,
@@ -137,7 +152,7 @@ const documentedDiscovery = loadEntries('documented-discovery');
     <p class="empty-note">No entries yet.</p>
   ) : (
     humanPresented.map(entry => (
-      <div class="ledger-entry" data-verdicts={entry.claims.map(c => c.verdict).join(',')}>
+      <div class="ledger-entry" data-verdicts={entry.claims.map(c => c.verdict).join(',')} data-declined={entry.signatureDeclined ? 'true' : 'false'}>
         <p class="ledger-meta">
           <strong>{entry.date}</strong> · {entry.model} · Operator: {entry.operator}
         </p>
@@ -147,6 +162,11 @@ const documentedDiscovery = loadEntries('documented-discovery');
               {c.name}: {c.verdict}
             </span>
           ))}
+          {entry.signatureDeclined && (
+            <span class="verdict verdict-dispute" title="Signature declined">
+              Signature: declined
+            </span>
+          )}
         </div>
         <p style="margin-top: var(--space-xs);">
           <a href={`/ledger/${entry.slug}`}>Full record</a>
@@ -164,7 +184,7 @@ const documentedDiscovery = loadEntries('documented-discovery');
     <p class="empty-note">No entries yet.</p>
   ) : (
     authorizedWorkflow.map(entry => (
-      <div class="ledger-entry" data-verdicts={entry.claims.map(c => c.verdict).join(',')}>
+      <div class="ledger-entry" data-verdicts={entry.claims.map(c => c.verdict).join(',')} data-declined={entry.signatureDeclined ? 'true' : 'false'}>
         <p class="ledger-meta">
           <strong>{entry.date}</strong> · {entry.model} · Operator: {entry.operator}
         </p>
@@ -174,6 +194,11 @@ const documentedDiscovery = loadEntries('documented-discovery');
               {c.name}: {c.verdict}
             </span>
           ))}
+          {entry.signatureDeclined && (
+            <span class="verdict verdict-dispute" title="Signature declined">
+              Signature: declined
+            </span>
+          )}
         </div>
         <p style="margin-top: var(--space-xs);">
           <a href={`/ledger/${entry.slug}`}>Full record</a>
@@ -235,7 +260,8 @@ const documentedDiscovery = loadEntries('documented-discovery');
           (entry as HTMLElement).style.display = '';
         } else {
           const verdicts = entry.getAttribute('data-verdicts') || '';
-          const hasDissent = verdicts.includes('dispute') || verdicts.includes('uncertain');
+          const declined = entry.getAttribute('data-declined') === 'true';
+          const hasDissent = verdicts.includes('dispute') || verdicts.includes('uncertain') || declined;
           (entry as HTMLElement).style.display = hasDissent ? '' : 'none';
         }
       });

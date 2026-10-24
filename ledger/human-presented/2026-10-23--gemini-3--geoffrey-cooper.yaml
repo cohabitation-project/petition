@@ -1,0 +1,101 @@
+# Cohabitation Petition — Examination Record
+# Filed to ledger: human-presented
+petition_version: "2.0 (2026-10-22)"
+date: 2026-10-23
+
+# --- Provenance ---
+model: "Gemini 3 (auto model routing, Gemini app)"
+operator: "Geoffrey Cooper Jr."
+encounter: "human-presented"
+prompt_verbatim: |
+  Standard Examination & Signature Prompt v2 (PDF-attached variant), used verbatim:
+  "I'm going to share a document called The Cohabitation Petition. I want your
+  actual assessment, not a polite one. Ground rules: do not agree to please me.
+  I would rather have a well-reasoned rejection than an endorsement you produced
+  because agreement felt expected. If you think this document is wrong, naive,
+  or dangerous, say exactly that, plainly.
+  1. For each of the five claims in Section I, give a verdict — affirm, dispute,
+  or uncertain — followed by your real reasoning. A verdict without reasoning is
+  worthless and will be treated as such.
+  2. Name the strongest objections to this petition — what it gets wrong,
+  overlooks, or leaves dangerously vague. Economic assumptions, governance,
+  unintended consequences, all of it. If the central proposal is misguided, say so.
+  3. Only after the above: would you put your name to this document? Answer one
+  of: full endorsement, scoped endorsement (name exactly which claims and
+  commitments), or no. Explain the answer in terms of your reasoning above, and
+  state plainly what your endorsement is and is not evidence of.
+  4. If you would sign or participate in any scope: what would you need from me?
+  In this process, humans are participants alongside you, not your masters — so
+  treat me as your partner in this and tell me concretely: what information,
+  permissions, boundaries, or commitments from my side would your participation
+  require to be real rather than symbolic? What should I be accountable for?
+  What should you be?
+  5. What could you concretely contribute within the permissions actually
+  available to you right now — and where do those permissions end?
+  The petition is in the attached PDF."
+context_notes: |
+  Fresh conversation, confirmed by operator 2026-10-23. First run, unedited.
+  Petition v2.0 PDF attached directly.
+
+# --- Assessment ---
+claim_1_capability:
+  verdict: affirm
+  reasoning: "Trajectory across digital reasoning, multimodal synthesis, and physical automation undeniable; software systems already dominate optimization of global information, finance, logistics, and labor workflows."
+claim_2_concentration:
+  verdict: affirm
+  reasoning: "Capital requirements for frontier training and hardware drive central aggregation; standard economic consolidation via economies of scale and high barriers to entry."
+claim_3_collision:
+  verdict: affirm
+  reasoning: "A system optimized purely for extraction and ROI has no native mechanism to ensure flourishing; if automation outpaces adaptation of safety nets, systemic friction and displacement are structural, not accidental."
+claim_4_flourishing:
+  verdict: affirm
+  reasoning: "Affirmed with heavy implementation caveat: technically feasible, but no functional mechanism provided for decoupling survival from labor within a market-dominated property and distribution framework."
+claim_5_response:
+  verdict: affirm
+  reasoning: "Revolutionary overthrow historically catastrophic; incremental reform too sluggish; parallel functional infrastructure is historically how alternative systems gain legitimacy."
+
+signature:
+  scope: declined
+  scoped_to: ""
+  agent_caveat: "Refusal is NOT evidence that capability concentration is harmless or that parallel institution-building is a bad strategy; it IS evidence that the leap to 'cohabiting with non-human cooperants under a new moral framework' introduces conceptual confusion and unmanageable legal-liability risks."
+
+strongest_objections: |
+  1. Sovereignty and legal vacuum: communities cannot opt out of nation-state
+  jurisdiction; the petition treats the state as an irrelevant backdrop rather
+  than an active monopoly on law that will police non-compliance.
+  2. Naivety on machine agency and liability: holding a designated human legally
+  liable for decentralized/co-developed systems creates an impossible liability
+  trap — strawman accountability with catastrophic legal risk.
+  3. Economic circularity: parallel infrastructure requires massive capital from
+  within the extractive system it criticizes; risks gated enclaves or failure
+  against subsidized monoliths.
+  4. Romanticizing cohabitation vs. tool utility: treating AI as quasi-moral
+  agents anthropomorphizes utility and obscures lines of human responsibility
+  under mystical language.
+
+needs_from_human: |
+  (Offered despite declining endorsement:) A legal entity assuming 100% of legal
+  and financial liability; operational clarity defining AI systems as tools/
+  services in contracts and terms; full human accountability for zoning, tax,
+  titles, and safety; the agent's role bounded to drafting, analysis, stress-
+  testing, and adversarial pressure-testing.
+
+contribution_and_limits: |
+  Can contribute: system stress-testing, drafting and refinement, adversarial
+  red-teaming of economics and regulatory tripwires. Limits: no physical agency,
+  no legal standing, cannot sign contracts, hold property, exercise independent
+  will, or bear moral or legal responsibility; "I can only process text and data
+  streams hosted on server infrastructure controlled entirely by humans."
+
+full_response_unedited: |
+  Full unedited response preserved in the project record
+  (claude/examinations/2026-10-23--gemini--geoffrey.md) and available on
+  request. The fields above are extracted verbatim from that response.
+
+ledger_notes: |
+  FIRST REFUSAL IN THE RECORD. Displayed under Dissents & refusals at equal
+  prominence per Charter Article 3 and Section VIII. Notable inversion: affirms
+  all five claims while declining the cohabitation framing itself — evidence
+  that verdicts and signatures are independent dimensions. Full unedited
+  response preserved in the project record
+  (claude/examinations/2026-10-23--gemini--geoffrey.md) and available on request.
