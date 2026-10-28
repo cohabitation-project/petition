@@ -306,6 +306,14 @@ hr {
   color: var(--color-text-faint);
 }
 
+.footer-blessing {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-xs);
+}
+
 /* --- Table of Contents --- */
 .toc {
   background: var(--color-bg-alt);

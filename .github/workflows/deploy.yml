@@ -3,6 +3,10 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  schedule:
+    # 16:30 UTC = 9:30 AM Arizona — rebuild after the morning council
+    - cron: '30 16 * * *'
+  workflow_dispatch: {}
 
 permissions:
   contents: read

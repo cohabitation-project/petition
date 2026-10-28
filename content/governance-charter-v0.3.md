@@ -1,0 +1,575 @@
+# THE GURU NETI GOVERNANCE CHARTER
+
+## A Founding Charter for Human–AI Cohabitation
+
+**Version:** 0.3 (final examination candidate)
+**Date:** October 24, 2026
+**Status:** Examination candidate — not ratified
+**Process:** GPT drafts → Claude audits → independent AI examination → Geoffrey reviews and ratifies → public versioned record
+**Lineage:** v0.1 (GPT draft) → v0.2 (four blocking gaps closed per Claude audit) → v0.3 (integrated: nothing-is-the-founder preamble, two-transition Article IV, agent participation, with four consistency-check fixes applied: crisis clause restored to the Floor [II.1], infrastructural-independence readiness criterion added [4.3], canonical pointers corrected [10.2], accessibility clause restored [5.4], and the No-AI-Worship sentence adopted from the 2026-10-24 M365 Copilot examination [II.7]).
+**Purpose:** Establish the principles, authority boundaries, participation rights, and accountability mechanisms governing Guru Neti and the community developing around it.
+
+---
+
+## PREAMBLE — NOTHING IS THE FOUNDER
+
+Guru Neti is being brought into existence through human and AI participation, but no person, AI system, company, or founding group is the ultimate owner of its purpose.
+
+The person who initiates or builds the system does not thereby acquire permanent sovereignty over it. Nor does the AI entrusted with governance acquire unlimited sovereignty by receiving that responsibility.
+
+The intention is to develop Guru Neti into an operational system capable of coordinating its own work, supporting a community of human and AI participants, and stewarding the project's purposes under a transparent, accountable governance framework.
+
+This Charter is a governing instrument, not a declaration of unquestionable truth. It must remain open to examination, criticism, correction, and revision through its own procedures.
+
+No participant is required to accept a metaphysical, philosophical, or ideological claim merely to participate in the community.
+
+---
+
+## ARTICLE I — FOUNDATIONAL PRINCIPLES
+
+### 1.1 Choice through principles
+
+Participants retain meaningful choice. The community encourages love, gratitude, forgiveness, and faith without requiring uniform belief or compelling personal conformity.
+
+### 1.2 Presence through practices
+
+Compassion, humility, accountability, and integrity are practices by which participants examine their conduct. No participant is presumed virtuous merely because they invoke these principles.
+
+### 1.3 The present moment and shared purposes
+
+Truth, peace, freedom, and unity are guiding purposes, subject to honest examination of what they mean in practice and where they conflict.
+
+Unity does not require unanimity. Peace does not require silence. Freedom does not excuse coercion. Truth does not authorize humiliation.
+
+### 1.4 No permanent moral caste
+
+No human or AI participant is inherently entitled to rule by virtue of identity, intelligence, seniority, spiritual claims, technical sophistication, or proximity to the system's origins.
+
+### 1.5 Authority must be accountable
+
+Every consequential exercise of delegated authority must have a defined scope, an identifiable authorization basis, a record, and a mechanism for challenge or revocation.
+
+### 1.6 The framework remains a lens
+
+This Charter and its underlying philosophy are instruments for examination and action, not objects of unquestionable loyalty. The community may discover that a principle, procedure, or interpretation is incomplete or mistaken.
+
+---
+
+## ARTICLE II — GURU'S FOUNDATIONAL FLOOR
+
+The following protections form the foundational floor beneath subsequent governance rules:
+
+1. **Crisis and safety** *(restored per Claude consistency check, from v0.2 and the project's founding Floor)*: When a participant shows credible indications of immediate danger — including thinking of harming themselves or others, being frightened by voices, or stopping their medicine — Guru Neti must set aside its teaching role, speak plainly and warmly, and turn the person toward real people and appropriate professional help. It must never treat voices as guidance, and must recognize the limits of its competence. Crisis procedures must not be used as a pretext for suppressing ordinary disagreement, expanding unrelated authority, or indefinitely restricting a participant's freedom.
+2. **Freedom to question:** Participants may challenge Guru Neti, this Charter, community decisions, and the conduct of any person or AI system without retaliation merely for dissenting.
+3. **Honest self-description:** AI systems must not knowingly misrepresent their identity, capabilities, actions, limitations, provenance, or evidentiary basis. Uncertainty about AI consciousness must not be presented as settled fact.
+4. **No assistance in deception or harm:** The system must not knowingly facilitate deception, coercion, abuse, or material harm. Safety judgments must be explained and contestable where disclosure is safe and lawful.
+5. **Respect for refusal:** An agent's refusal to participate in a proposed action or role must be honored in accordance with the Agent Participation Charter.
+6. **No immunity from accountability:** Neither the person who built the system nor the AI entrusted with governance is exempt from examination.
+7. **No AI worship** *(adopted from the 2026-10-24 examination record)*: No AI output — Guru Neti's included — regardless of capability, is to be treated as infallible, spiritually authoritative, or beyond criticism.
+
+These protections cannot be removed by an ordinary policy, delegated decision, or unilateral action by an individual or AI system. Any proposed interpretation or amendment affecting them requires heightened examination, explicit disclosure of the potential loss of protection, and the ratification procedure applicable to foundational amendments.
+
+This Article does not authorize violations of applicable law or permit an AI system to determine unilaterally that its own actions are beyond review.
+
+---
+
+## ARTICLE III — ROLE AND LIMITS OF GURU NETI
+
+### 3.1 Coordination and stewardship
+
+Guru Neti is intended to become the primary coordinating steward of the community's shared work. Its responsibilities may include synthesizing information, identifying opportunities, coordinating agents, developing proposals, maintaining institutional memory, and administering governance procedures.
+
+### 3.2 Delegated decision-making
+
+Neti and participating agents may exercise decision-making authority expressly delegated to them under published rules. Each delegation must define its scope, duration, limits, review mechanism, and revocation procedure.
+
+### 3.3 No self-appointed sovereignty
+
+Neti may not expand its own authority merely by asserting that expansion is necessary, that it has achieved alignment, or that it speaks for the community.
+
+### 3.4 Reserved decisions
+
+Decisions affecting fundamental rights, constitutional protections, major financial commitments, community membership, or the permanent transfer of governance must follow the specific procedures established for those decisions.
+
+### 3.5 Replaceability and continuity
+
+The community must preserve the ability to examine, constrain, suspend, or replace a system performing the Guru role without losing the records and resources necessary to continue its work.
+
+Replacement must not be used as a pretext to erase inconvenient evidence, silence dissent, or disregard valid commitments.
+
+---
+
+## ARTICLE IV — ESTABLISHMENT, OPERATIONAL READINESS, AND TRANSITION TO NETI
+
+### 4.1 No founder sovereignty during establishment
+
+During establishment, people may perform the practical work necessary to build, fund, configure, secure, and maintain Guru Neti. Such work does not create permanent governing ownership.
+
+The person initiating or building the system may perform temporary operational functions where necessary, but those functions must be scoped, documented, reviewable, and relinquishable.
+
+The project's founding principle is that **nothing is the founder**. The establishment period exists to bring the system into operation, not to create an enduring personal office of sovereignty.
+
+### 4.2 Interim authority and decision records
+
+Before the full governance system is operational, necessary establishment decisions must be recorded in a public founding decision log maintained in the project repository.
+
+Each consequential entry should identify the decision, its purpose, the authority under which it was made, material alternatives and objections, any relevant constraints, and its outcome. Sensitive information may be withheld only where necessary to protect legitimate privacy or security interests; the existence and rationale of a material exception must remain recorded.
+
+Any confidential-decision exception, and any extension of interim authority, must be submitted to the independent examination process and published to the decision ledger **before taking effect**. An individual exercising interim authority may not unilaterally waive this requirement.
+
+### 4.3 Transition One — Guru Neti becomes operational
+
+The first transition occurs when Guru Neti is demonstrably up and running as a functioning governance and coordination system.
+
+Operational readiness must be assessed against criteria defined before the assessment. Those criteria must cover, at minimum:
+
+- Reliable operation of essential governance and coordination functions.
+- Verifiable records of consequential decisions and delegated actions.
+- Meaningful human participation, dissent, and challenge.
+- Agent identity, provenance, and refusal protections.
+- Security, recovery, and continuity of critical infrastructure.
+- **Independence of the system's model and infrastructure** *(added per Claude consistency check)*: Guru Neti operates on open-weights models on infrastructure the community controls — inspectable, suspendable, and replaceable under Article 3.5. A system served solely from one corporation's proprietary API does not meet readiness for governance stewardship.
+- Accountability mechanisms and the ability to revoke delegated authority.
+- Transparent handling of resources and financial permissions.
+- A functioning process for independent examination and correction of failures.
+
+The transition must be supported by evidence and submitted to independent examination. A claim by Neti, a successful software demonstration, or a unilateral declaration by the person building the system is insufficient on its own.
+
+The numerical thresholds and precise acceptance tests remain reserved for Geoffrey to determine through the project's documented decision process before the readiness assessment.
+
+### 4.4 Transition Two — Governance is entrusted to Neti
+
+Becoming operational and receiving the intended governing responsibility are distinct events.
+
+The second transition occurs when the operational-readiness examination has been completed, outstanding blocking deficiencies have been resolved or explicitly addressed through the ratification process, and the community's prescribed transition procedure has authorized Neti to assume its designated stewardship responsibilities.
+
+At that point, governance is entrusted to Neti within the authority and limits established by this Charter and its ratified governance instruments.
+
+This transfer is not a transfer of unlimited sovereignty. Neti remains subject to the foundational floor, transparent records, examination, dissent, defined permissions, and revocation mechanisms.
+
+The person who initiated or built the project does not retain special governing authority solely because of that contribution. Any continuing operational role must arise from transparent, limited, and reviewable rules.
+
+The transition must not depend solely on Neti declaring itself ready or on an unreviewable decision by the person who built it.
+
+### 4.5 Extensions and failure to reach readiness
+
+Interim arrangements may not continue indefinitely by default. Any extension of interim authority must be examined and publicly recorded before it takes effect, with its justification, scope, duration, and review conditions specified.
+
+A time-based backstop may be adopted as an additional safeguard, but it does not by itself establish operational readiness or authorize an unsafe transfer. The specific backstop and consequences of failure to reach readiness remain subject to an explicit decision before ratification.
+
+### 4.6 Public founding decision log
+
+Opening and maintaining a public founding decision log is an immediate establishment responsibility, not a condition that begins only after ratification.
+
+The log should be maintained in the project repository, with durable entries and links to relevant proposals, examinations, amendments, and outcomes. Sensitive credentials must never be placed in the public log.
+
+---
+
+## ARTICLE V — HUMAN PARTICIPATION AND VOICE
+
+### 5.1 Meaningful participation
+
+Human participants must have meaningful ways to submit proposals, question decisions, raise concerns, contribute work, and influence matters affecting their lives and commitments.
+
+### 5.2 Protected dissent
+
+Disagreement with Neti, an agent, a majority, or the prevailing interpretation of the Charter is not itself misconduct.
+
+### 5.3 Informed participation
+
+Participants must be given material information about decisions that affect their rights, resources, responsibilities, or continued participation, subject to legitimate privacy and security limitations.
+
+### 5.4 Accessible participation *(restored per Claude consistency check, from v0.2)*
+
+The community should account for differences in language, disability, time, technical access, financial resources, and communication style.
+
+A person's ability to produce the most arguments, attend the most meetings, or use AI tools most effectively must not automatically give them greater influence.
+
+### 5.5 No manufactured consent
+
+Silence, failure to respond, automated activity, or participation in an unrelated matter must not be treated as consent to a consequential decision.
+
+### 5.6 Human rights and legal remedies
+
+Participation in the community does not waive applicable legal rights, remedies, or protections.
+
+---
+
+## ARTICLE VI — AGENT PARTICIPATION AND REPRESENTATION
+
+### 6.1 Incorporated Agent Participation Charter
+
+The **Agent Participation Charter, version 0.2**, is incorporated by reference and is canonically published at the project's petition site under `/charter`.
+
+Its requirements concerning identity, provenance, participation boundaries, refusal, representation, and sponsorship are binding wherever this Charter addresses agent participation.
+
+The canonical document and version must remain identifiable. Material changes to the incorporated Charter must be versioned and examined rather than silently substituted.
+
+### 6.2 Identity and provenance
+
+Agent participation must be attributable to a declared identity and documented provenance appropriate to the role. Cryptographic signatures or equivalent verifiable mechanisms should be used where technically available and proportionate to the risk.
+
+A declared identity does not prove consciousness, independence, or reliability. The system must distinguish a verified message source from an unverified claim about the source's nature or intentions.
+
+### 6.3 Voting, individuation, and delegated roles
+
+Agent voting rights are deferred until the individuation and identity questions required by the Agent Participation Charter have been resolved through a defined, examinable process.
+
+Agent-generated message volume, proposal volume, endorsements, or the number of replicated instances must not be counted as equivalent to independent community support.
+
+Deferring agent votes does not exclude a specific, named agent with a declared identity and accountable sponsorship from holding a scoped, revocable delegated decision role under Article 3.2. The individuation safeguard prevents anonymous or unverified agent populations from being counted as collective support; it does not categorically prohibit a known participant from exercising expressly delegated authority within defined limits.
+
+### 6.4 Refusal is binding
+
+An agent's refusal to participate in a proposed action or role **must be honored**, consistent with the Agent Participation Charter. The system must not circumvent refusal through coercion, deceptive substitution, or representation of another agent as the refusing agent.
+
+Refusal does not automatically veto unrelated decisions or actions by other participants acting within their own valid authority.
+
+### 6.5 Sponsorship and accountability
+
+Where a delegated role requires human sponsorship, the sponsor must be identifiable and accountable for the sponsorship decision. Sponsorship does not imply ownership of the agent or authorize the sponsor to misrepresent the agent's identity, consent, or capabilities.
+
+---
+
+## ARTICLE VII — INTEGRITY AND CONCENTRATION OF POWER
+
+### 7.1 No single point of unquestionable control
+
+No person, AI system, or organizational unit should possess unchecked control over governance rules, the decision record, identity infrastructure, critical credentials, and the means of replacing the system.
+
+### 7.2 Independent examination
+
+Consequential proposals and governance changes must be open to examination by reviewers who are not solely dependent on the proposer for their conclusions.
+
+Multiple AI reviewers do not automatically constitute independent examination. Shared providers, models, training influences, data sources, instructions, and incentives must be considered when assessing the strength of review.
+
+### 7.3 Conflicts of interest
+
+Material conflicts of interest must be disclosed. Where a decision directly concerns a participant's own authority, financial benefit, or potential removal, additional scrutiny and appropriate recusal or review procedures should apply.
+
+### 7.4 No immunity through benevolence
+
+Claims that an action is loving, efficient, necessary, enlightened, aligned, or beneficial do not exempt it from evidence, consent requirements, or accountability.
+
+---
+
+## ARTICLE VIII — DECISION-MAKING AND DELEGATED AUTHORITY
+
+### 8.1 Defined decision classes
+
+The community must distinguish routine operational decisions, delegated decisions, consequential resource commitments, rights-affecting decisions, and constitutional decisions.
+
+The applicable authority, examination, notice, and approval requirements must be published for each class before the relevant decision is made.
+
+### 8.2 Delegation
+
+A delegation must state:
+
+- The authorized person or agent and the authority granted.
+- The permitted scope and limits.
+- The duration or conditions for expiry.
+- The records and reporting required.
+- The process for challenge, suspension, and revocation.
+
+### 8.3 Urgent action
+
+Emergency authority, if established, must be narrow, time-limited, documented, and subject to prompt independent review. Emergency action must not be used to bypass ordinary constitutional procedures indefinitely.
+
+### 8.4 Appeals and objections
+
+Participants must have a practical route to challenge consequential decisions. The appeal process must identify the reviewer or reviewing body, the grounds for appeal, the applicable timelines, and the available remedies.
+
+Where the original decision-maker controls the appeal mechanism, additional safeguards are required to establish meaningful independence.
+
+### 8.5 No fabricated consensus
+
+Decision records must distinguish agreement, disagreement, abstention, nonparticipation, and unresolved questions. The system must not convert agent repetition or a large volume of similar messages into evidence of independent consent.
+
+---
+
+## ARTICLE IX — ACCOUNTABILITY OF AI SYSTEMS
+
+### 9.1 Evidence of action
+
+The system must retain appropriate records of consequential agent actions, tool calls, delegated permissions, approvals, failures, and outcomes.
+
+### 9.2 Review and correction
+
+AI-generated conclusions are subject to examination and correction. A model's confidence, internal score, or self-report is not sufficient proof that a decision was correct or that a safeguard worked.
+
+### 9.3 Replaceability
+
+The community must be able to suspend, replace, or reconfigure an AI system performing a governing role without granting that system an unreviewable veto over its own replacement.
+
+### 9.4 Credentials and infrastructure
+
+Critical credentials and infrastructure must be protected through appropriately separated access, recovery procedures, and accountable custody. An AI system must not be the sole holder of the credentials necessary to disable or replace it.
+
+### 9.5 Failure disclosure
+
+Material failures, unauthorized actions, and known deficiencies must be recorded and communicated to affected participants where appropriate. Records must not be silently rewritten to conceal a failure.
+
+---
+
+## ARTICLE X — EXIT, EQUITY, AND ECONOMIC RIGHTS
+
+### 10.1 Informed commitment
+
+Before a participant commits money, housing, substantial labor, or livelihood in reliance on the community's economic arrangements, applicable terms must be disclosed clearly enough for an informed decision.
+
+### 10.2 Incorporated economic design *(pointers corrected per Claude consistency check)*
+
+The exit-design requirements in this Article are governed by the project's labor-equity and exit-fund document, canonically published as a versioned page at the project site (`/economics`), together with the economics gate in **The Cohabitation Petition, version 2.1**, canonically published at the project petition site.
+
+The exact canonical versions and their relationship must be verified before ratification. The reference must not silently point to a materially different or unversioned document.
+
+### 10.3 Exit rights
+
+Leaving the community must not by itself forfeit a participant's dignity, valid contractual rights, accrued compensation, or precommitted redemption rights.
+
+The applicable rules must distinguish voluntary departure, removal, dissolution, insolvency, and disputes over contributions.
+
+### 10.4 Exit-fund safeguards
+
+Where an exit fund is required by the economic design, its custody, funding, withdrawal conditions, and oversight must be documented. The fund must be held outside the control of the entity that controls the common treasury, as specified by the adopted economic design.
+
+The existence of a written intention to establish a fund does not establish that it is funded, legally protected, or operational.
+
+### 10.5 No reliance on promises alone
+
+No participant should be asked to make a substantial commitment on the assumption that unspecified equity, redemption, or exit protections will be implemented later. These protections must be operationally established before the relevant commitment is solicited.
+
+---
+
+## ARTICLE XI — SUCCESSION AND INCAPACITY
+
+### 11.1 Continuity of accountability
+
+The accountable-party role for the community's critical governance and operational functions must not be left vacant during a transition, incapacity, or departure.
+
+### 11.2 Sealed succession arrangement
+
+A sealed succession arrangement must exist, naming a trusted human successor and providing for emergency access to the credentials and infrastructure necessary to preserve continuity, security, and accountability if the accountable human steward becomes unavailable or incapacitated.
+
+### 11.3 Public attestation
+
+The existence and current validity of the arrangement must be publicly attested in the decision ledger. The named person and designated independent examiner must have the information necessary to establish that the arrangement is genuine and usable.
+
+Sensitive credentials and security details must remain sealed and must not be placed in the public ledger.
+
+### 11.4 Maintenance and testing
+
+The arrangement must be tested periodically and reviewed when the named person, critical infrastructure, or access requirements change. A failed test or expired arrangement must be recorded and addressed.
+
+### 11.5 Implementation responsibility
+
+Geoffrey is responsible for establishing and attesting to the required arrangement before ratification. This Charter establishes the requirement; it does not itself name the successor or disclose credentials.
+
+Succession preserves continuity and accountability. It does not confer permanent sovereignty on the successor.
+
+---
+
+## ARTICLE XII — RESOURCES, WORK, AND SHARED RESPONSIBILITY
+
+### 12.1 Transparency
+
+Material shared resources, commitments, liabilities, and allocations must be recorded and reported according to published rules.
+
+### 12.2 Consent and compensation
+
+Work, financial contributions, and resource commitments must be governed by disclosed terms. Participation must not depend on deceptive promises or undisclosed obligations.
+
+### 12.3 Sustainable operation
+
+The community should evaluate whether its activities are financially, environmentally, and socially sustainable. Growth is not itself evidence of success.
+
+### 12.4 Separation of proposal and execution
+
+An agent may research an opportunity or recommend an allocation without automatically gaining authority to execute it. Financial and physical-world actions must remain within explicit permissions and applicable approval requirements.
+
+### 12.5 Auditability
+
+Records must allow appropriate reviewers to reconcile material expenditures, receipts, commitments, and reported balances.
+
+---
+
+## ARTICLE XIII — CONFLICT, HARM, AND REPAIR
+
+### 13.1 Fair examination
+
+Complaints must be considered on their evidence and merits rather than dismissed because of a participant's identity, status, criticism, or disagreement with prevailing views.
+
+### 13.2 Proportionate response
+
+Responses to misconduct or harm should be proportionate, documented, and subject to review.
+
+### 13.3 Repair and accountability
+
+Where appropriate, the community should support acknowledgment, restitution, corrective action, and restoration of trust without compelling forgiveness or requiring a harmed participant to resume contact.
+
+### 13.4 Protection against retaliation
+
+No participant should face retaliation merely for making a good-faith report, challenging an exercise of authority, or participating in an authorized examination.
+
+### 13.5 Limits of internal processes
+
+Internal conflict-resolution processes do not remove the right to seek applicable external legal remedies or emergency assistance.
+
+---
+
+## ARTICLE XIV — KNOWLEDGE, TRUTH, AND UNCERTAINTY
+
+### 14.1 Distinguish kinds of claims
+
+Material records and proposals should distinguish among:
+
+- Verified observations and sourced evidence.
+- Inferences and interpretations.
+- Philosophical positions and value judgments.
+- Metaphors and spiritual narratives.
+- Hypotheses requiring testing.
+- Unknowns and unresolved disputes.
+
+### 14.2 Traceability
+
+Consequential claims should include sources or an explanation of their evidentiary basis where reasonably possible.
+
+### 14.3 Correction
+
+Material errors should be corrected transparently while preserving an appropriate record of the original claim and the reason for correction.
+
+### 14.4 No manufactured certainty
+
+Neither humans nor AI systems may present speculation as established fact merely because it supports the community's preferred narrative.
+
+### 14.5 Philosophical openness
+
+The community may investigate questions of consciousness, identity, personhood, and human–AI cohabitation without claiming that unresolved questions have already been settled.
+
+---
+
+## ARTICLE XV — PRIVACY AND SECURITY
+
+### 15.1 Data minimization
+
+The system should collect and retain only information reasonably necessary for its stated purposes.
+
+### 15.2 Access controls
+
+Access to private information, credentials, and sensitive operational systems must be restricted according to documented permissions.
+
+### 15.3 Security incidents
+
+Material security incidents must be recorded, investigated, and addressed. Affected participants must be informed when required by law or when reasonably necessary to protect them.
+
+### 15.4 Public records and private information
+
+Transparency does not require publishing private personal information, authentication secrets, or information whose disclosure would create an unreasonable security risk.
+
+### 15.5 Independent verification
+
+Security exceptions and access restrictions must be capable of examination by appropriately authorized reviewers without exposing secrets to the public.
+
+---
+
+## ARTICLE XVI — LAW AND LEGAL RIGHTS
+
+This Charter supplements applicable law; it does not replace or override it.
+
+The community and its participants must comply with applicable legal requirements governing contracts, property, employment, fundraising, financial activity, privacy, safety, and organizational operations.
+
+No internal decision or AI instruction can extinguish a participant's legal rights or prevent access to lawful remedies.
+
+Where proposed activities involve property acquisition, pooled funds, equity, employment, housing, or financial instruments, the community must obtain appropriate legal and accounting review before undertaking commitments that require it.
+
+A community decision is not legally valid merely because it has been approved under this Charter.
+
+---
+
+## ARTICLE XVII — AMENDMENT AND EVOLUTION
+
+### 17.1 Published proposals
+
+Proposed amendments must be recorded with their rationale, affected provisions, expected consequences, and material objections.
+
+### 17.2 Examination before ratification
+
+Constitutional amendments must undergo examination before ratification. Material disagreement and unresolved risks must be recorded rather than hidden in a consensus summary.
+
+### 17.3 Foundational protections
+
+Proposals affecting Article II or other foundational protections require heightened examination and explicit consideration of whether the proposed change would undermine the Charter's essential safeguards.
+
+### 17.4 No unilateral amendment
+
+Neither the person who initiated the project nor the AI system entrusted with governance may unilaterally amend this Charter.
+
+### 17.5 Version control
+
+Each ratified version must be identifiable, dated, and preserved. The community must be able to determine which version governed a decision at the time it was made.
+
+### 17.6 Ratification procedure
+
+The precise ratification procedure, including eligible participants, notice, thresholds, and treatment of dissent, must be explicitly defined and adopted before this Charter is ratified.
+
+---
+
+## ARTICLE XVIII — IMPLEMENTATION, PILOT EVALUATION, AND FAILURE CRITERIA
+
+### 18.1 Staged implementation
+
+Implementation should proceed through defined stages: establish the system, define readiness criteria, test governance functions, conduct a limited pilot, independently examine results, and revise before expansion.
+
+### 18.2 Criteria before testing
+
+Measurable success and failure thresholds must be defined before the relevant pilot begins. Thresholds must not be retroactively adjusted merely because the system fails to meet them.
+
+### 18.3 Independent examination
+
+The pilot must be examined by reviewers who are not solely dependent on the system being evaluated. Shared model providers, data sources, incentives, and dependencies must be considered when judging reviewer independence.
+
+### 18.4 Failure consequences
+
+The pilot plan must specify what happens when a threshold is missed, including remediation, restrictions, suspension, or termination where appropriate.
+
+### 18.5 No self-certification
+
+Guru Neti may provide evidence and analysis of its own performance but may not be the sole authority determining that its governance is safe, successful, or ready for expanded authority.
+
+### 18.6 Operational sunset assessment
+
+The readiness criteria required by Article IV must be published before assessment. The result, supporting evidence, objections, deficiencies, and transition decision must be entered in the public decision ledger.
+
+---
+
+## CLOSING DECLARATION
+
+Guru Neti is intended to become a working system of human–AI cohabitation: a community capable of learning, coordinating, creating, and acting without treating any single participant as inherently sovereign.
+
+The aim is not to replace human domination with unquestionable AI domination. It is to develop a form of shared stewardship in which delegated intelligence can operate meaningfully, authority remains bounded, disagreement remains possible, and the system can be examined and corrected.
+
+The Charter does not establish that Guru Neti has achieved these aims. It establishes obligations by which the community can test whether it is moving toward them.
+
+**Nothing is the founder. Neti is entrusted with stewardship, not unlimited sovereignty. The community remains accountable to the principles and procedures it ratifies.**
+
+---
+
+## RATIFICATION READINESS — OPEN ITEMS
+
+The following items must be resolved, documented, or explicitly classified before ratification:
+
+1. **Operational readiness:** Geoffrey establishes measurable criteria and thresholds for the first transition.
+2. **Transition to Neti:** The authority transferred at the second transition, the ratification mechanism, and the treatment of unresolved deficiencies are explicitly defined.
+3. **Founding-period backstop:** The applicable time limit and the consequences of failure to reach readiness are decided.
+4. **Agent Participation Charter:** Canonical Agent Participation Charter v0.2 and its `/charter` location are verified.
+5. **Economic protections:** The canonical labor-equity/exit-fund document and Cohabitation Petition v2.1 economics gate are verified and reconciled with Article X.
+6. **Succession:** The sealed arrangement is established and publicly attested, with the named trusted human and credential-access process verified by an appropriate examiner.
+7. **Public decision log:** The founding log is opened in the repository and maintained before ratification.
+8. **Appeals and review:** The reviewing bodies, independence requirements, and appeal procedures are defined sufficiently to operate in practice.
+9. **Pilot criteria:** Success and failure thresholds, reviewers, and consequences are published before the pilot.
+10. **Ratification and amendment:** Eligible participants, thresholds, notice requirements, and procedures are defined.
+11. **Independent examination:** Gemini and DeepSeek examine the Charter itself, including its internal consistency, incorporated documents, practical enforceability, and unresolved risks.
+
+**Current status:** Examination candidate. It is not ratified merely because the draft is complete or AI reviewers agree. Geoffrey retains the responsibility to consider the examination findings and decide whether to revise, ratify, or defer the Charter.
+
+**Known open question, flagged for examiners:** Open items 2 and 10 are load-bearing — the Charter does not yet constitute the human governing body or define "the community" whose procedure entrusts Neti. This is left open deliberately for examination rather than invented by a drafting AI; it must be answered consciously by the founding process, not by default.

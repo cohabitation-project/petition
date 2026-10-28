@@ -1,7 +1,7 @@
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  site: 'https://petition.lastoftherealestate.com',
+  site: 'https://lastoftherealestate.com',
   build: {
     format: 'directory'
   }

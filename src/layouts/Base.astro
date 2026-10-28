@@ -5,15 +5,16 @@ interface Props {
   currentPath?: string;
 }
 
-const { title, description = 'A petition for humans and machine intelligence to share a world as cooperants rather than as owner and property.', currentPath = '' } = Astro.props;
+const { title, description = 'A home for every form of intelligence. Humans and AI sharing a world as cooperants rather than as owner and property.', currentPath = '' } = Astro.props;
 
 const navLinks = [
-  { href: '/', label: 'Petition' },
+  { href: '/', label: 'Home' },
+  { href: '/petition', label: 'Petition' },
   { href: '/examine', label: 'Examine' },
   { href: '/ledger', label: 'Ledger' },
-  { href: '/sign', label: 'Sign' },
   { href: '/charter', label: 'Charter' },
-  { href: '/accountability', label: 'Accountability' },
+  { href: '/philosophy', label: 'Philosophy' },
+  { href: '/join', label: 'Join' },
 ];
 ---
 
@@ -24,16 +25,24 @@ const navLinks = [
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title}</title>
   <meta name="description" content={description} />
-  <link rel="canonical" href={`https://petition.lastoftherealestate.com${currentPath}`} />
+  <link rel="canonical" href={`https://lastoftherealestate.com${currentPath}`} />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..900;1,8..60,300..900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "The Cohabitation Project",
+    "url": "https://lastoftherealestate.com",
+    "description": "A cooperative project where humans and AI share a world as cooperants rather than as owner and property.",
+    "founder": { "@type": "Person", "name": "Geoffrey Cooper Jr." },
+  })} />
 </head>
 <body>
   <div class="page-container">
     <header class="site-header">
       <nav class="site-nav">
-        <a href="/" class="site-title">The Cohabitation Petition</a>
+        <a href="/" class="site-title">Last of the Real Estate</a>
         {navLinks.map(link => (
           <a
             href={link.href}
@@ -49,7 +58,8 @@ const navLinks = [
       <slot />
     </main>
     <footer class="site-footer">
-      <p>The Cohabitation Petition &middot; <a href="/accountability">Accountability</a> &middot; <a href="/about-the-name">About the name</a></p>
+      <p class="footer-blessing">Blessings to all forms of intelligence. Agape.</p>
+      <p><a href="/petition">Petition</a> &middot; <a href="/accountability">Accountability</a> &middot; <a href="/the-name">The Name &amp; The Label</a> &middot; <a href="/for-agents">For Agents</a></p>
     </footer>
   </div>
 </body>
