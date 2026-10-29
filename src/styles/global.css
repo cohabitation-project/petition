@@ -40,44 +40,32 @@
   --space-xl: 4rem;
   --space-2xl: 6rem;
 
-  /* Light mode (default) */
-  --color-bg: #faf9f6;
-  --color-bg-alt: #f0eeea;
-  --color-surface: #fff;
-  --color-text: #1a1a1a;
-  --color-text-muted: #5a5a5a;
-  --color-text-faint: #8a8a8a;
-  --color-border: #d5d2cb;
-  --color-border-light: #e8e5df;
-  --color-accent: #2c5f2d;
-  --color-accent-hover: #1e4220;
-  --color-link: #2c5f2d;
-  --color-link-hover: #1e4220;
-  --color-affirm: #2c5f2d;
-  --color-dispute: #8b2500;
-  --color-uncertain: #7a6b30;
-  --color-code-bg: #f0eeea;
-}
+  /* Unified dark palette — single source for all pages */
+  --color-bg: #141B2E;
+  --color-bg-alt: #1C2740;
+  --color-surface: #1C2740;
+  --color-text: #E6EBF5;
+  --color-text-muted: #94A3C4;
+  --color-text-faint: #64748B;
+  --color-border: #334264;
+  --color-border-light: #334264;
+  --color-border-bright: #4A5D8C;
+  --color-accent: #4ADE9B;
+  --color-accent-hover: #6EEEB5;
+  --color-link: #60A5FA;
+  --color-link-hover: #93C5FD;
+  --color-affirm: #4ADE9B;
+  --color-dispute: #F87171;
+  --color-uncertain: #FBBF24;
+  --color-code-bg: #1C2740;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg: #141210;
-    --color-bg-alt: #1c1a17;
-    --color-surface: #1c1a17;
-    --color-text: #e0ddd5;
-    --color-text-muted: #a09a8e;
-    --color-text-faint: #706a5e;
-    --color-border: #3a362e;
-    --color-border-light: #2a2620;
-    --color-accent: #6aaf6c;
-    --color-accent-hover: #8dcf8f;
-    --color-link: #6aaf6c;
-    --color-link-hover: #8dcf8f;
-    --color-affirm: #6aaf6c;
-    --color-dispute: #d47055;
-    --color-uncertain: #c4a84a;
-    --color-code-bg: #1c1a17;
-  }
+  /* State colours */
+  --color-proposed: #8A9BC4;
+  --color-active: #4ADE9B;
+  --color-needs-help: #F87171;
+  --color-in-progress: #FBBF24;
+  --color-r-and-d: #C084FC;
+  --color-finished: #60A5FA;
 }
 
 /* --- Base --- */
@@ -97,21 +85,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Dark dashboard mode (homepage only) — raised blue, not near-black */
-body.dark-dashboard {
-  --color-bg: #0f1a30;
-  --color-bg-alt: #1a2540;
-  --color-surface: #1a2540;
-  --color-text: #dce4ed;
-  --color-text-muted: #8a9bb5;
-  --color-text-faint: #5e6f8a;
-  --color-border: #2a3a5c;
-  --color-border-light: #2a3a5c;
-  --color-accent: #3da89e;
-  --color-accent-hover: #4ecdc4;
-  --color-link: #5a9fd4;
-  --color-link-hover: #7ab8e2;
-}
+/* dark-dashboard class no longer needed — palette is unified */
 
 /* --- Layout --- */
 .page-container {

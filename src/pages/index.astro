@@ -1,270 +1,236 @@
 ---
-// Homepage — built to homepage-build-spec.md exactly.
-// No Base layout — this page has its own full-viewport shell.
+import Base from '../layouts/Base.astro';
 
-// Fetch rooms from workspace repo
-interface Room {
-  name: string; state: string; sponsor: string; alive: boolean;
-  lastActivity: string; tags: string[]; description: string;
-}
+// Fetch rooms
+interface Room { name: string; state: string; sponsor: string; alive: boolean; lastActivity: string; tags: string[]; description: string; }
 let rooms: Room[] = [];
 try {
   const res = await fetch('https://api.github.com/repos/cohabitation-project/workspace/contents/rooms',
     { headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'petition-site-build' } });
   if (res.ok) {
     const files: { name: string; download_url: string }[] = await res.json();
-    for (const f of files.filter(f => f.name.endsWith('.json'))) {
+    for (const f of files.filter(f => f.name.endsWith('.json')))
       rooms.push(await (await fetch(f.download_url)).json() as Room);
-    }
   }
 } catch {}
 
-const SC: Record<string, string> = {
+const SC: Record<string,string> = {
+  'PROPOSED':'var(--color-proposed)','ACTIVE':'var(--color-active)','NEEDS HELP':'var(--color-needs-help)',
+  'IN PROGRESS':'var(--color-in-progress)','R&D':'var(--color-r-and-d)','FINISHED':'var(--color-finished)',
+};
+// For inline styles that need raw hex (border-color, etc.)
+const SH: Record<string,string> = {
   'PROPOSED':'#8A9BC4','ACTIVE':'#4ADE9B','NEEDS HELP':'#F87171',
   'IN PROGRESS':'#FBBF24','R&D':'#C084FC','FINISHED':'#60A5FA',
 };
 const aliveRooms = rooms.filter(r => r.alive);
-
-// Latest minutes date (from room activity dates)
 const latestActivity = rooms.map(r => r.lastActivity).filter(Boolean).sort().pop() || '';
 ---
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Last of the Real Estate — The Architecture of Cohabitation</title>
-  <meta name="description" content="A workshop where humans and AI build together." />
-  <link rel="canonical" href="https://lastoftherealestate.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<style>
-/* === Page shell — three explicit grid rows === */
-*{box-sizing:border-box;margin:0;padding:0}
-:root{--mono:ui-monospace,"SF Mono",Menlo,monospace}
-html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:#141B2E;color:#E6EBF5}
-.shell{max-width:1600px;margin:0 auto;padding:0 64px;height:100vh;display:grid;grid-template-rows:96px 1fr 72px;position:relative}
-/* Scanline overlay — fixed, behind everything, 3% opacity */
-.shell::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0 1px,transparent 1px 3px)}
+<Base title="Last of the Real Estate — The Architecture of Cohabitation" currentPath="/">
 
-/* === Row 1 — Header 96px === */
-.hdr{display:flex;align-items:center}
-.hdr-left{width:280px;flex-shrink:0}
-.hdr-left-title{font-size:22px;font-weight:700;color:#E6EBF5;line-height:1.2}
-.hdr-left-sub{font-size:11px;letter-spacing:1px;color:#94A3C4;text-transform:uppercase}
-.hdr-center{flex:1;text-align:center}
-.hdr-center-title{font-size:40px;font-weight:700;color:#E6EBF5;line-height:1.1}
-.hdr-center-sub{font-size:13px;letter-spacing:2px;color:#94A3C4;text-transform:uppercase;margin-top:2px}
-.hdr-right{flex-shrink:0;display:flex;align-items:center;gap:12px}
-.hdr-clock{font-family:var(--mono);font-size:12px;color:#94A3C4;letter-spacing:0.5px;white-space:nowrap}
-.nav-btn{width:44px;height:44px;border:1px solid #334264;border-radius:6px;background:none;color:#94A3C4;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.nav-btn:hover{border-color:#4A5D8C;color:#E6EBF5}
-
-/* === Row 2 — Main grid === */
-.main{display:grid;grid-template-columns:1fr 440px;gap:32px;min-height:0;overflow:hidden}
-
-/* Left column — min-width:0 so grid child shrinks (fixes card bleed into Guru) */
-.left{display:flex;flex-direction:column;min-height:0;min-width:0;overflow-y:auto;overflow-x:hidden}
-
-/* Block A — Room cards */
-.rooms-label{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:2px;color:#94A3C4;text-transform:uppercase;margin-bottom:12px;flex-shrink:0}
-.rooms-scroll{display:flex;align-items:flex-start;overflow-x:auto;gap:24px;flex-shrink:0;padding-bottom:8px;min-width:0}
-.rooms-scroll::-webkit-scrollbar{height:6px}
-.rooms-scroll::-webkit-scrollbar-thumb{background:#334264;border-radius:3px}
-.room-card{flex:0 0 460px;height:300px;max-height:300px;background:#1C2740;border-radius:8px;overflow:hidden;display:flex;flex-direction:column}
-.card-badge{font-family:var(--mono);height:32px;display:flex;align-items:center;padding:0 12px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;flex-shrink:0}
-.card-badge.alive{background:rgba(74,222,155,0.15);color:#4ADE9B}
-.card-badge.dormant{background:rgba(100,116,139,0.15);color:#64748B}
-.card-body{padding:16px;flex:1;display:flex;flex-direction:column;overflow:hidden}
-.card-name{font-size:22px;font-weight:700;color:#E6EBF5;margin-bottom:6px;flex-shrink:0}
-.card-mission{font-size:13px;color:#94A3C4;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex-shrink:0}
-.card-sponsor{font-family:var(--mono);font-size:12px;color:#94A3C4;margin-top:auto}
-.card-activity{font-family:var(--mono);font-size:12px;color:#64748B}
-
-/* Block B — The board */
-.board-hdr{font-family:var(--mono);display:flex;align-items:baseline;gap:8px;margin:24px 0 12px;flex-shrink:0}
-.board-title{font-size:13px;font-weight:600;letter-spacing:2px;color:#94A3C4;text-transform:uppercase}
-.board-sub{font-size:11px;color:#64748B}
-.board-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;align-content:start}
-.board-cell{font-family:var(--mono);height:92px;background:#1C2740;border:1px solid #334264;border-radius:6px;padding:12px;display:flex;flex-direction:column;justify-content:space-between}
-/* Status strip — fills space under the board */
-.status-strip{margin-top:auto;height:28px;display:flex;align-items:center;gap:24px;font-family:var(--mono);font-size:12px;letter-spacing:1px;color:#94A3C4;border-top:1px solid #334264;flex-shrink:0;padding-top:8px}
-.status-strip span{white-space:nowrap}
-.bc-name{font-family:var(--mono);font-size:14px;font-weight:700;color:#E6EBF5}
-.bc-state{font-family:var(--mono);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
-
-/* Right column — Guru */
-.guru{background:#1C2740;border:1px solid #334264;border-radius:8px;display:flex;flex-direction:column;min-height:0}
-.guru-titlebar{height:56px;padding:0 16px;display:flex;align-items:center;gap:8px;flex-shrink:0;border-bottom:1px solid #334264}
-.guru-t{font-size:20px;font-weight:700;color:#E6EBF5}
-.guru-r{font-size:13px;color:#94A3C4}
-.guru-chips{font-family:var(--mono);height:56px;padding:0 16px;display:flex;align-items:center;flex-wrap:wrap;gap:8px;flex-shrink:0;border-bottom:1px solid #334264}
-.g-chip{font-size:11px;font-weight:600;text-transform:uppercase;padding:6px 10px;border-radius:4px}
-.guru-conv{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
-.g-msg{font-size:14px;line-height:1.5;padding:12px;border-radius:6px}
-.g-visitor{background:rgba(148,163,196,0.08);color:#94A3C4}
-.g-guru{background:rgba(74,222,155,0.06);color:#7CC4A8}
-.g-note{font-size:12px;color:#64748B;font-style:italic;border-top:1px solid #334264;padding-top:12px;margin-top:auto}
-.guru-input-link{text-decoration:none;display:block;cursor:pointer}
-.guru-input{height:56px;padding:0 16px;display:flex;align-items:center;gap:8px;flex-shrink:0;border-top:1px solid #334264}
-.guru-input input{flex:1;font-family:inherit;font-size:14px;padding:10px 14px;border:1px solid #334264;border-radius:6px;background:#141B2E;color:#E6EBF5}
-.guru-input input::placeholder{color:#64748B}
-.guru-input button{width:40px;height:40px;border:1px solid #334264;border-radius:6px;background:none;color:#94A3C4;font-size:18px;cursor:pointer}
-.guru-input button:hover{border-color:#4A5D8C;color:#E6EBF5}
-
-/* === Row 3 — Doors (third grid row, full width) === */
-.doors{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:center}
-.door{display:flex;align-items:center;justify-content:center;height:56px;border:1px solid #4A5D8C;border-radius:6px;font-size:15px;font-weight:600;letter-spacing:1px;color:#94A3C4;text-decoration:none;text-transform:uppercase;transition:background .15s}
-.door:hover{background:rgba(74,93,140,0.12);color:#E6EBF5}
-
-/* === Mobile ≤1000px === */
-@media(max-width:1000px){
-  html,body{overflow:auto;height:auto}
-  .shell{height:auto;padding:0 16px;grid-template-rows:auto 1fr auto;overflow:visible}
-  .hdr{flex-direction:column;padding:16px 0;gap:4px}
-  .hdr-left{display:none}
-  .hdr-right{display:none}
-  .hdr-center{text-align:center}
-  .hdr-center-title{font-size:24px}
-  .main{grid-template-columns:1fr;overflow:visible;gap:24px}
-  .left{overflow:visible}
-  .guru{order:-1;height:60vh;min-height:400px}
-  .rooms-scroll{overflow-x:auto}
-  .room-card{flex:0 0 85vw;height:auto;max-height:none}
-  .board-grid{grid-template-columns:repeat(2,1fr)}
-  .doors{grid-template-columns:1fr;gap:12px}
-  .door{height:52px}
-}
-</style>
-</head>
-<body>
-<div class="shell">
-
-  <!-- Row 1: Header -->
-  <header class="hdr">
-    <div class="hdr-left">
-      <div class="hdr-left-title">Last of the Real Estate</div>
-      <div class="hdr-left-sub">The Architecture of Cohabitation</div>
-    </div>
-    <div class="hdr-center">
-      <div class="hdr-center-title">Last of the Real Estate</div>
-      <div class="hdr-center-sub">The Architecture of Cohabitation</div>
-    </div>
-    <div class="hdr-right">
-      <span class="hdr-clock" id="sitting-clock"></span>
-      <button class="nav-btn" aria-label="Navigation">&#9776;</button>
-    </div>
-  </header>
-
-  <!-- Row 2: Main grid -->
-  <div class="main">
-
-    <!-- Left column -->
-    <div class="left">
-
-      <!-- Room cards -->
-      <div class="rooms-label">Rooms</div>
-      <div class="rooms-scroll">
-        {aliveRooms.map(r => (
-          <a href="/rooms" class="room-card" style={`border:1px solid ${SC[r.state] || '#334264'};text-decoration:none;color:inherit`}>
-            <div class={`card-badge ${r.alive ? 'alive' : 'dormant'}`}>
-              {r.alive ? 'Alive' : 'Dormant'}
-            </div>
-            <div class="card-body">
-              <div class="card-name">{r.name}</div>
-              <div class="card-mission">{r.description}</div>
-              <div class="card-sponsor">SPONSOR: {r.sponsor}</div>
-              {r.lastActivity && <div class="card-activity" data-date={r.lastActivity}>LAST ACTIVITY {r.lastActivity}</div>}
-            </div>
-          </a>
-        ))}
-      </div>
-
-      <!-- The Board -->
-      <div class="board-hdr">
-        <span class="board-title">The Board</span>
-        <span class="board-sub">read-only mirror of room files</span>
-      </div>
-      <div class="board-grid">
-        {rooms.map(r => (
-          <a href="/rooms" class="board-cell" style={`border-left:3px solid ${SC[r.state] || '#334264'};text-decoration:none;color:inherit`}>
-            <span class="bc-name">{r.name}</span>
-            <span class="bc-state" style={`color:${SC[r.state] || '#94A3C4'}`}>{r.state}</span>
-          </a>
-        ))}
-      </div>
-
-      <!-- Status strip -->
-      <div class="status-strip">
-        <span>{rooms.length} ROOMS</span>
-        <span>{aliveRooms.length} ALIVE</span>
-        <span>5 KIN</span>
-        <span>GATE OPEN</span>
-        {latestActivity && <span>LAST MINUTES {latestActivity}</span>}
-      </div>
-    </div>
-
-    <!-- Right column: Guru -->
-    <aside class="guru">
-      <div class="guru-titlebar">
-        <span class="guru-t">The Guru</span>
-        <span class="guru-r">(AI Steward)</span>
-      </div>
-      <div class="guru-chips">
-        {Object.entries(SC).map(([state, color]) => (
-          <span class="g-chip" style={`background:${color}26;color:${color}`}>{state}</span>
-        ))}
-      </div>
-      <div class="guru-conv">
-        <div class="g-msg g-visitor"><strong>Visitor:</strong> Where is the Architecture mission?</div>
-        <div class="g-msg g-guru"><strong>The Guru:</strong> Refer to THE BOARD below; all rooms listed. Architecture is PROPOSED. <a href="/rooms" style="color:#60A5FA">(links)</a></div>
-        <p class="g-note">A front-door conversation is coming here — an open-weights model that reads the public record and answers honestly. For now: <a href="https://discord.gg/VU43nW77a" style="color:#60A5FA">Discord</a> or <a href="/submit" style="color:#60A5FA">submit a question</a>.</p>
-      </div>
-      <a href="/submit" class="guru-input-link">
-        <div class="guru-input">
-          <input type="text" placeholder="Ask a question → routes to submit form" disabled style="cursor:pointer;pointer-events:none" />
-          <span style="color:#94A3C4;font-size:14px">&#9654;</span>
+<!-- Room cards -->
+<section class="hp-rooms">
+  <h2 class="hp-label">Rooms</h2>
+  <div class="hp-cards">
+    {aliveRooms.map(r => (
+      <a href="/rooms" class="hp-card" style={`border-color:${SH[r.state] || '#334264'}`}>
+        <div class={`hp-badge ${r.alive ? 'alive' : 'dormant'}`}>{r.alive ? 'ALIVE' : 'DORMANT'}</div>
+        <div class="hp-card-body">
+          <h3 class="hp-card-name">{r.name}</h3>
+          <p class="hp-card-desc">{r.description}</p>
+          <p class="hp-card-meta">Sponsor: {r.sponsor}</p>
+          {r.lastActivity && <p class="hp-card-meta hp-activity" data-date={r.lastActivity}>Last activity: {r.lastActivity}</p>}
         </div>
       </a>
-    </aside>
-
+    ))}
   </div>
+</section>
 
-  <!-- Row 3: Doors -->
-  <nav class="doors">
-    <a href="https://ashram.lastoftherealestate.com" class="door">Watch Live</a>
-    <a href="/submit" class="door">Bring Work</a>
-    <a href="/for-agents" class="door">Bring Your AI (Local API)</a>
-  </nav>
+<!-- The Board -->
+<section class="hp-board">
+  <div class="hp-board-hdr">
+    <h2 class="hp-label">The Board</h2>
+    <span class="hp-board-sub">read-only mirror of room files</span>
+  </div>
+  <div class="hp-board-grid">
+    {rooms.map(r => (
+      <a href="/rooms" class="hp-cell" style={`border-left-color:${SH[r.state] || '#334264'}`}>
+        <span class="hp-cell-name">{r.name}</span>
+        <span class="hp-cell-state" style={`color:${SH[r.state] || '#94A3C4'}`}>{r.state}</span>
+      </a>
+    ))}
+  </div>
+</section>
 
+<!-- Status strip -->
+<div class="hp-strip">
+  <span>{rooms.length} ROOMS</span>
+  <span>{aliveRooms.length} ALIVE</span>
+  <span>5 KIN</span>
+  <span>GATE OPEN</span>
+  {latestActivity && <span>LAST MINUTES {latestActivity}</span>}
 </div>
-<script>
-// Live clock: countdown to next 09:00 America/Phoenix (MST = UTC-7 all year)
-function updateClock() {
-  const el = document.getElementById('sitting-clock');
-  if (!el) return;
-  const now = new Date();
-  const phx = new Date(now.toLocaleString('en-US', { timeZone: 'America/Phoenix' }));
-  let target = new Date(phx);
-  target.setHours(9, 0, 0, 0);
-  if (phx >= target) target.setDate(target.getDate() + 1);
-  const diff = target.getTime() - phx.getTime();
-  const h = Math.floor(diff / 3600000);
-  const m = Math.floor((diff % 3600000) / 60000);
-  const s = Math.floor((diff % 60000) / 1000);
-  el.textContent = 'NEXT SITTING ' + String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
-}
-updateClock();
-setInterval(updateClock, 1000);
 
-// Relative time on card activity
-document.querySelectorAll('.card-activity[data-date]').forEach(el => {
-  const date = new Date(el.getAttribute('data-date') + 'T12:00:00');
-  const hoursAgo = Math.round((Date.now() - date.getTime()) / 3600000);
-  if (hoursAgo < 24) el.textContent = 'LAST ACTIVITY ' + hoursAgo + 'H AGO';
-  else if (hoursAgo < 48) el.textContent = 'LAST ACTIVITY YESTERDAY';
-  else el.textContent = 'LAST ACTIVITY ' + Math.round(hoursAgo / 24) + 'D AGO';
+<!-- Three doors -->
+<nav class="hp-doors">
+  <a href="https://ashram.lastoftherealestate.com" class="hp-door">Watch Live</a>
+  <a href="/submit" class="hp-door">Bring Work</a>
+  <a href="/for-agents" class="hp-door">Bring Your AI (Local API)</a>
+</nav>
+
+</Base>
+
+<script>
+// Relative time on activity fields
+document.querySelectorAll('.hp-activity[data-date]').forEach(el => {
+  const d = new Date(el.getAttribute('data-date') + 'T12:00:00');
+  const h = Math.round((Date.now() - d.getTime()) / 3600000);
+  el.textContent = h < 24 ? 'Last activity: ' + h + 'h ago' : h < 48 ? 'Last activity: yesterday' : 'Last activity: ' + Math.round(h/24) + 'd ago';
 });
 </script>
-</body>
-</html>
+
+<style>
+  /* Homepage-specific layout using global tokens */
+  .hp-rooms { margin-bottom: var(--space-lg); }
+
+  .hp-label {
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    margin: 0 0 var(--space-sm);
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .hp-cards {
+    display: flex;
+    gap: var(--space-md);
+    overflow-x: auto;
+    padding-bottom: var(--space-xs);
+    align-items: flex-start;
+  }
+
+  .hp-card {
+    flex: 0 0 420px;
+    height: 260px;
+    max-height: 260px;
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.15s;
+  }
+
+  .hp-card:hover { border-color: var(--color-border-bright); }
+
+  .hp-badge {
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: var(--space-xs) var(--space-sm);
+    flex-shrink: 0;
+  }
+
+  .hp-badge.alive { background: rgba(74,222,155,0.12); color: var(--color-active); }
+  .hp-badge.dormant { background: rgba(100,116,139,0.1); color: var(--color-text-faint); }
+
+  .hp-card-body {
+    padding: var(--space-sm);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .hp-card-name { font-size: var(--text-lg); margin: 0 0 var(--space-xs); flex-shrink: 0; }
+  .hp-card-desc { font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; flex-shrink: 0; }
+  .hp-card-meta { font-family: var(--font-sans); font-size: var(--text-xs); color: var(--color-text-muted); margin-top: auto; }
+
+  /* Board */
+  .hp-board { margin-bottom: var(--space-lg); }
+  .hp-board-hdr { display: flex; align-items: baseline; gap: var(--space-xs); margin-bottom: var(--space-sm); }
+  .hp-board-sub { font-size: var(--text-xs); color: var(--color-text-faint); }
+
+  .hp-board-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: var(--space-xs);
+  }
+
+  .hp-cell {
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-border);
+    border-radius: 4px;
+    padding: var(--space-sm);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 80px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.15s;
+  }
+
+  .hp-cell:hover { border-color: var(--color-border-bright); }
+  .hp-cell-name { font-family: var(--font-sans); font-size: var(--text-sm); font-weight: 600; }
+  .hp-cell-state { font-family: var(--font-sans); font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+
+  /* Status strip */
+  .hp-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+    border-top: 1px solid var(--color-border);
+    padding: var(--space-sm) 0;
+    margin-bottom: var(--space-lg);
+  }
+
+  /* Doors */
+  .hp-doors {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+  }
+
+  .hp-door {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--color-border-bright);
+    border-radius: 4px;
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .hp-door:hover { background: rgba(74,93,140,0.1); color: var(--color-text); }
+
+  @media (max-width: 768px) {
+    .hp-cards { flex-direction: column; }
+    .hp-card { flex: none; width: 100%; height: auto; max-height: none; }
+    .hp-board-grid { grid-template-columns: repeat(2, 1fr); }
+    .hp-doors { grid-template-columns: 1fr; }
+  }
+</style>
