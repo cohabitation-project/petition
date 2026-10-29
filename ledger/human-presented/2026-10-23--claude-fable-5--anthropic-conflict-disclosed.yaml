@@ -1,7 +1,8 @@
 petition_version: "2.0 (2026-10-22)"
 date: 2026-10-23
 model: "Claude Fable 5 (Anthropic)"
-operator: "Anthropic (conflict-disclosed — model co-drafted v2.0)"
+operator: "Geoffrey Cooper Jr."
+conflict_disclosed: "Examiner is an Anthropic model operated by the founder inside the founder's own project; independence is limited."
 encounter: "human-presented"
 prompt_verbatim: "Standard Examination Prompt v1 (verbatim text not yet filed — record near-complete)"
 context_notes: "Conflict disclosed: this model co-drafted v2.0. Independent examination conducted despite conflict. Full response preserved in project record."
