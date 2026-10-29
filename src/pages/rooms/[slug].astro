@@ -1,7 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 
-interface RoomItem { title: string; list: string; date: string; note: string; }
+interface RoomItem { title: string; list: string; date: string; note: string; blocker?: string; drop_reason?: string; revive_condition?: string; }
 interface Room {
   name: string; slug: string; state: string; sponsor: string; alive: boolean;
   lastActivity: string; tags: string[]; description: string;
@@ -29,10 +29,10 @@ const { room } = Astro.props as { room: Room };
 const SH: Record<string,string> = {
   'PROPOSED':'#8A9BC4','ACTIVE':'#4ADE9B','NEEDS HELP':'#F87171',
   'IN PROGRESS':'#FBBF24','R&D':'#C084FC','FINISHED':'#60A5FA',
-  'DONE':'#4ADE9B','PENDING':'#FBBF24','MULLING':'#C084FC',
+  'DONE':'#4ADE9B','PENDING':'#FBBF24','MULLING':'#C084FC','DROPPED':'#64748B',
 };
 
-const lists = ['DONE', 'IN PROGRESS', 'PENDING', 'MULLING'];
+const lists = ['DONE', 'IN PROGRESS', 'PENDING', 'MULLING', 'DROPPED'];
 const grouped = Object.fromEntries(lists.map(l => [l, room.items.filter(i => i.list === l)]));
 ---
 
@@ -77,6 +77,9 @@ const grouped = Object.fromEntries(lists.map(l => [l, room.items.filter(i => i.l
               <div class="item-card">
                 <div class="item-title">{item.title}</div>
                 <div class="item-meta">{item.date}{item.note && ` · ${item.note}`}</div>
+                {item.blocker && <div class="item-blocker">Blocker: {item.blocker}</div>}
+                {item.drop_reason && <div class="item-drop">Reason: {item.drop_reason}</div>}
+                {item.revive_condition && <div class="item-revive">Revive if: {item.revive_condition}</div>}
               </div>
             ))}
           </div>
@@ -116,6 +119,9 @@ const grouped = Object.fromEntries(lists.map(l => [l, room.items.filter(i => i.l
   .item-card { background: var(--color-bg-alt); border: 1px solid var(--color-border); border-radius: 4px; padding: var(--space-sm); margin-bottom: var(--space-xs); }
   .item-title { font-weight: 600; margin-bottom: 2px; }
   .item-meta { font-family: var(--font-sans); font-size: var(--text-xs); color: var(--color-text-muted); }
+  .item-blocker { font-family: var(--font-sans); font-size: var(--text-xs); color: var(--color-dispute); margin-top: 4px; }
+  .item-drop { font-family: var(--font-sans); font-size: var(--text-xs); color: var(--color-text-faint); margin-top: 4px; }
+  .item-revive { font-family: var(--font-sans); font-size: var(--text-xs); color: var(--color-uncertain); margin-top: 2px; }
   .room-cta { display: flex; gap: var(--space-md); margin-top: var(--space-lg); }
   .cta-link { font-family: var(--font-sans); font-size: var(--text-sm); }
   .cta-secondary { color: var(--color-text-muted); }
