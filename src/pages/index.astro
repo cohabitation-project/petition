@@ -57,14 +57,14 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 .main{display:grid;grid-template-columns:1fr 440px;gap:32px;min-height:0;overflow:hidden}
 
 /* Left column — min-width:0 so grid child shrinks (fixes card bleed into Guru) */
-.left{display:flex;flex-direction:column;min-height:0;min-width:0;overflow:hidden}
+.left{display:flex;flex-direction:column;min-height:0;min-width:0;overflow-y:auto;overflow-x:hidden}
 
 /* Block A — Room cards */
 .rooms-label{font-size:13px;font-weight:600;letter-spacing:2px;color:#94A3C4;text-transform:uppercase;margin-bottom:12px;flex-shrink:0}
-.rooms-scroll{display:flex;overflow-x:auto;gap:24px;scroll-snap-type:x mandatory;flex-shrink:0;padding-bottom:8px;min-width:0}
+.rooms-scroll{display:flex;align-items:flex-start;overflow-x:auto;gap:24px;flex-shrink:0;padding-bottom:8px;min-width:0}
 .rooms-scroll::-webkit-scrollbar{height:6px}
 .rooms-scroll::-webkit-scrollbar-thumb{background:#334264;border-radius:3px}
-.room-card{flex:0 0 460px;height:300px;max-height:300px;background:#1C2740;border-radius:8px;overflow:hidden;display:flex;flex-direction:column;scroll-snap-align:start}
+.room-card{flex:0 0 460px;height:300px;max-height:300px;background:#1C2740;border-radius:8px;overflow:hidden;display:flex;flex-direction:column}
 .card-badge{height:32px;display:flex;align-items:center;padding:0 12px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;flex-shrink:0}
 .card-badge.alive{background:rgba(74,222,155,0.15);color:#4ADE9B}
 .card-badge.dormant{background:rgba(100,116,139,0.15);color:#64748B}
