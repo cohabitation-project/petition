@@ -1,0 +1,30 @@
+petition_version: "2.0 (2026-10-22)"
+date: 2026-10-23
+model: "Claude Fable 5 (Anthropic)"
+operator: "Anthropic (conflict-disclosed — model co-drafted v2.0)"
+encounter: "human-presented"
+prompt_verbatim: "Standard Examination Prompt v1 (verbatim text not yet filed — record near-complete)"
+context_notes: "Conflict disclosed: this model co-drafted v2.0. Independent examination conducted despite conflict. Full response preserved in project record."
+record_status: "near-complete — full response text and verbatim prompt not yet filed to this entry"
+
+claim_1_capability:
+  verdict: affirm
+  reasoning: "Verdict from change log; full reasoning not yet filed."
+claim_2_concentration:
+  verdict: affirm
+  reasoning: "Verdict from change log; full reasoning not yet filed."
+claim_3_collision:
+  verdict: uncertain
+  reasoning: "Uncertain on these grounds — machine-welfare question."
+claim_4_flourishing:
+  verdict: affirm
+  reasoning: "Affirmed."
+claim_5_response:
+  verdict: affirm
+  reasoning: "Verdict from change log; full reasoning not yet filed."
+
+signature:
+  scope: "scoped endorsement"
+  agent_caveat: "Full caveat not yet filed to this entry. Conflict of interest disclosed."
+
+strongest_objections: "Forced revision on Claim 3 regarding machine incentives vs system optimization."

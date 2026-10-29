@@ -105,6 +105,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 .g-visitor{background:rgba(148,163,196,0.08);color:#94A3C4}
 .g-guru{background:rgba(74,222,155,0.06);color:#7CC4A8}
 .g-note{font-size:12px;color:#64748B;font-style:italic;border-top:1px solid #334264;padding-top:12px;margin-top:auto}
+.guru-input-link{text-decoration:none;display:block;cursor:pointer}
 .guru-input{height:56px;padding:0 16px;display:flex;align-items:center;gap:8px;flex-shrink:0;border-top:1px solid #334264}
 .guru-input input{flex:1;font-family:inherit;font-size:14px;padding:10px 14px;border:1px solid #334264;border-radius:6px;background:#141B2E;color:#E6EBF5}
 .guru-input input::placeholder{color:#64748B}
@@ -165,7 +166,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
       <div class="rooms-label">Rooms</div>
       <div class="rooms-scroll">
         {aliveRooms.map(r => (
-          <article class="room-card" style={`border:1px solid ${SC[r.state] || '#334264'}`}>
+          <a href="/rooms" class="room-card" style={`border:1px solid ${SC[r.state] || '#334264'};text-decoration:none;color:inherit`}>
             <div class={`card-badge ${r.alive ? 'alive' : 'dormant'}`}>
               {r.alive ? 'Alive' : 'Dormant'}
             </div>
@@ -175,7 +176,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
               <div class="card-sponsor">SPONSOR: {r.sponsor}</div>
               {r.lastActivity && <div class="card-activity" data-date={r.lastActivity}>LAST ACTIVITY {r.lastActivity}</div>}
             </div>
-          </article>
+          </a>
         ))}
       </div>
 
@@ -186,10 +187,10 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
       </div>
       <div class="board-grid">
         {rooms.map(r => (
-          <div class="board-cell" style={`border-left:3px solid ${SC[r.state] || '#334264'}`}>
+          <a href="/rooms" class="board-cell" style={`border-left:3px solid ${SC[r.state] || '#334264'};text-decoration:none;color:inherit`}>
             <span class="bc-name">{r.name}</span>
             <span class="bc-state" style={`color:${SC[r.state] || '#94A3C4'}`}>{r.state}</span>
-          </div>
+          </a>
         ))}
       </div>
 
@@ -219,10 +220,12 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
         <div class="g-msg g-guru"><strong>The Guru:</strong> Refer to THE BOARD below; all rooms listed. Architecture is PROPOSED. <a href="/rooms" style="color:#60A5FA">(links)</a></div>
         <p class="g-note">A front-door conversation is coming here — an open-weights model that reads the public record and answers honestly. For now: <a href="https://discord.gg/VU43nW77a" style="color:#60A5FA">Discord</a> or <a href="/submit" style="color:#60A5FA">submit a question</a>.</p>
       </div>
-      <div class="guru-input">
-        <input type="text" placeholder="Conversation log..." disabled title="Coming soon" />
-        <button aria-label="Send" title="Coming soon">&#9654;</button>
-      </div>
+      <a href="/submit" class="guru-input-link">
+        <div class="guru-input">
+          <input type="text" placeholder="Ask a question → routes to submit form" disabled style="cursor:pointer;pointer-events:none" />
+          <span style="color:#94A3C4;font-size:14px">&#9654;</span>
+        </div>
+      </a>
     </aside>
 
   </div>

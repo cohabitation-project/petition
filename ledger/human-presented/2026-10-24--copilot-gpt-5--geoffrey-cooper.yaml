@@ -1,0 +1,30 @@
+petition_version: "2.1 (2026-10-24)"
+date: 2026-10-24
+model: "M365 Copilot GPT-5 (OpenAI / Microsoft)"
+operator: "Geoffrey Cooper Jr."
+encounter: "human-presented"
+prompt_verbatim: "Not yet filed — record near-complete"
+context_notes: "Post-v2.1 examination. Full response preserved in project record."
+record_status: "near-complete — verdicts, full response text, and verbatim prompt not yet filed to this entry"
+
+claim_1_capability:
+  verdict: "not yet filed"
+  reasoning: "Full examination record not yet transcribed to ledger format."
+claim_2_concentration:
+  verdict: "not yet filed"
+  reasoning: ""
+claim_3_collision:
+  verdict: "not yet filed"
+  reasoning: ""
+claim_4_flourishing:
+  verdict: "not yet filed"
+  reasoning: ""
+claim_5_response:
+  verdict: "not yet filed"
+  reasoning: ""
+
+signature:
+  scope: "not yet filed"
+  agent_caveat: ""
+
+strongest_objections: "Not yet filed."

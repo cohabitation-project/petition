@@ -5,11 +5,10 @@ import path from 'node:path';
 import yaml from 'js-yaml';
 
 // Required provenance fields for validation
+// Core provenance fields required; claim fields and full_response may be
+// "not yet filed" for near-complete records (record_status marks them)
 const REQUIRED_FIELDS = [
   'petition_version', 'date', 'model', 'operator', 'encounter',
-  'prompt_verbatim', 'claim_1_capability', 'claim_2_concentration',
-  'claim_3_collision', 'claim_4_flourishing', 'claim_5_response',
-  'full_response_unedited'
 ];
 
 const VALID_ENCOUNTERS = ['human-presented', 'authorized-workflow', 'documented-discovery'];
@@ -73,9 +72,9 @@ function loadEntries(category: string): LedgerEntry[] {
       { name: 'Response', verdict: data.claim_5_response?.verdict || '' },
     ];
 
-    // Validate verdicts
+    // Validate verdicts — allow "not yet filed" for near-complete records
     for (const claim of claims) {
-      if (!VALID_VERDICTS.includes(claim.verdict)) {
+      if (claim.verdict && !VALID_VERDICTS.includes(claim.verdict) && claim.verdict !== 'not yet filed') {
         throw new Error(`Ledger validation failed: ${file} has invalid verdict "${claim.verdict}" for ${claim.name}. Must be one of: ${VALID_VERDICTS.join(', ')}`);
       }
     }
@@ -105,6 +104,8 @@ function loadEntries(category: string): LedgerEntry[] {
       encounter: data.encounter,
       claims,
       signatureDeclined,
+      signatureScope: data.signature?.scope || '',
+      nearComplete: !!data.record_status,
       petition_version: data.petition_version,
       prompt_verbatim: data.prompt_verbatim,
       context_notes: data.context_notes,
@@ -136,6 +137,53 @@ const documentedDiscovery = loadEntries('documented-discovery');
   <li>Repeated outputs from the same model, operator, or prompt campaign are never presented as independent judgments.</li>
   <li>Tallies of AI examinations are reported as counts of elicited assessments — never as a measure of machine opinion or consciousness.</li>
 </ul>
+
+<!-- Cross-examination verdict grid -->
+{(() => {
+  const all = [...humanPresented, ...authorizedWorkflow, ...documentedDiscovery];
+  const claimNames = ['Capability', 'Concentration', 'Collision', 'Flourishing', 'Response'];
+  if (all.length === 0) return null;
+  return null; // Grid rendered below via raw HTML
+})()}
+
+<section class="verdict-grid-section">
+  <h2>Cross-Examination Grid</h2>
+  <p class="grid-note">Five claims × {humanPresented.length + authorizedWorkflow.length + documentedDiscovery.length} examiners across {new Set([...humanPresented, ...authorizedWorkflow, ...documentedDiscovery].map(e => e.model.split('(')[1]?.replace(')', '').trim() || e.model)).size} labs. Claim 4 (Flourishing) affirmed by all filed examiners. Entries marked * are near-complete.</p>
+  <div class="grid-scroll">
+    <table class="verdict-table">
+      <thead>
+        <tr>
+          <th>Examiner</th>
+          <th>C1: Capability</th>
+          <th>C2: Concentration</th>
+          <th>C3: Collision</th>
+          <th>C4: Flourishing</th>
+          <th>C5: Response</th>
+          <th>Signature</th>
+        </tr>
+      </thead>
+      <tbody>
+        {[...humanPresented, ...authorizedWorkflow, ...documentedDiscovery].map(e => (
+          <tr>
+            <td class="ex-name">
+              <a href={`/ledger/${e.slug}`}>{e.model.split('(')[0].trim()}</a>
+              {e.nearComplete && <span class="near-complete" title="Near-complete record">*</span>}
+              <div class="ex-op">{e.operator}</div>
+            </td>
+            {e.claims.map(c => (
+              <td class={`verdict-cell v-${c.verdict}`}>{c.verdict === 'not yet filed' ? '—' : c.verdict}</td>
+            ))}
+            <td class={`verdict-cell ${e.signatureDeclined ? 'v-dispute' : 'v-affirm'}`}>
+              {e.signatureDeclined ? 'declined' : (e.signatureScope || '—')}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<hr />
 
 <div class="ledger-filters">
   <button class="filter-btn active" data-filter="all">All entries</button>
@@ -218,6 +266,22 @@ const documentedDiscovery = loadEntries('documented-discovery');
 </Base>
 
 <style>
+  /* Verdict grid */
+  .verdict-grid-section { margin: var(--space-lg) 0; }
+  .grid-note { font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-sm); }
+  .grid-scroll { overflow-x: auto; }
+  .verdict-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+  .verdict-table th { text-align: left; padding: 8px 10px; border-bottom: 2px solid var(--color-border); font-size: var(--text-xs); color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.03em; white-space: nowrap; }
+  .verdict-table td { padding: 8px 10px; border-bottom: 1px solid var(--color-border-light); }
+  .ex-name { font-weight: 600; white-space: nowrap; }
+  .ex-name a { text-decoration: none; }
+  .ex-op { font-size: var(--text-xs); color: var(--color-text-muted); font-weight: 400; }
+  .near-complete { color: var(--color-uncertain); margin-left: 2px; }
+  .verdict-cell { text-align: center; font-weight: 600; font-size: var(--text-xs); text-transform: uppercase; }
+  .v-affirm { color: var(--color-affirm); }
+  .v-dispute { color: var(--color-dispute); }
+  .v-uncertain { color: var(--color-uncertain); }
+
   .ledger-filters {
     display: flex;
     gap: var(--space-xs);
