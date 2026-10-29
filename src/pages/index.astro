@@ -1,499 +1,218 @@
 ---
-import Base from '../layouts/Base.astro';
+// Homepage — built to homepage-build-spec.md exactly.
+// No Base layout — this page has its own full-viewport shell.
 
-// Fetch board data (rooms) from the workspace repo at build time
+// Fetch rooms from workspace repo
 interface Room {
   name: string; state: string; sponsor: string; alive: boolean;
   lastActivity: string; tags: string[]; description: string;
 }
-
 let rooms: Room[] = [];
 try {
-  const contentsRes = await fetch(
-    'https://api.github.com/repos/cohabitation-project/workspace/contents/rooms',
-    { headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'petition-site-build' } }
-  );
-  if (contentsRes.ok) {
-    const files: { name: string; download_url: string }[] = await contentsRes.json();
+  const res = await fetch('https://api.github.com/repos/cohabitation-project/workspace/contents/rooms',
+    { headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'petition-site-build' } });
+  if (res.ok) {
+    const files: { name: string; download_url: string }[] = await res.json();
     for (const f of files.filter(f => f.name.endsWith('.json'))) {
-      const raw = await (await fetch(f.download_url)).json();
-      rooms.push(raw as Room);
+      rooms.push(await (await fetch(f.download_url)).json() as Room);
     }
   }
 } catch {}
 
-// Fetch three council extracts
-let minutesDate = '';
-let minutesUrl = '';
-let extracts: { name: string; text: string }[] = [];
-try {
-  const contentsRes = await fetch(
-    'https://api.github.com/repos/cohabitation-project/workspace/contents/council/minutes',
-    { headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'petition-site-build' } }
-  );
-  if (contentsRes.ok) {
-    const files: { name: string; download_url: string }[] = await contentsRes.json();
-    const jsonls = files.filter(f => f.name.endsWith('.jsonl')).sort((a, b) => b.name.localeCompare(a.name));
-    if (jsonls.length > 0) {
-      minutesDate = jsonls[0].name.replace('.jsonl', '');
-      minutesUrl = `https://github.com/cohabitation-project/workspace/blob/main/council/minutes/${minutesDate}.md`;
-      const raw = await (await fetch(jsonls[0].download_url)).text();
-      const envs = raw.trim().split('\n').filter(Boolean).map(l => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
-      const seen = new Set();
-      for (const env of envs) {
-        if (seen.has(env.from) || !env.text || seen.size >= 3) continue;
-        const first = env.text.match(/^.{20,}?[.!?](?:\s|$)/)?.[0]?.trim();
-        if (first && first.length <= 200) { extracts.push({ name: env.from, text: first }); seen.add(env.from); }
-      }
-    }
-  }
-} catch {}
-
-const aliveRooms = rooms.filter(r => r.alive);
-const stateColors: Record<string, string> = {
-  'PROPOSED': '#7c8ab5', 'ACTIVE': '#3da89e', 'NEEDS HELP': '#d45d5d',
-  'IN PROGRESS': '#5a9fd4', 'R&D': '#9b85c4', 'FINISHED': '#c9a84c',
+const SC: Record<string, string> = {
+  'PROPOSED':'#8A9BC4','ACTIVE':'#4ADE9B','NEEDS HELP':'#F87171',
+  'IN PROGRESS':'#FBBF24','R&D':'#C084FC','FINISHED':'#60A5FA',
 };
+const aliveRooms = rooms.filter(r => r.alive);
 ---
 
-<Base title="Last of the Real Estate — The Architecture of Cohabitation" currentPath="/">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Last of the Real Estate — The Architecture of Cohabitation</title>
+  <meta name="description" content="A workshop where humans and AI build together." />
+  <link rel="canonical" href="https://lastoftherealestate.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+/* === Page shell === */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:#141B2E;color:#E6EBF5}
+.shell{max-width:1600px;margin:0 auto;padding:0 64px;height:100vh;display:flex;flex-direction:column}
 
-<!-- Header -->
-<header class="db-hero">
-  <h1 class="db-title">Last of the Real Estate</h1>
-  <p class="db-tag">A workshop where humans and AI build together</p>
-</header>
+/* === Row 1 — Header 96px === */
+.hdr{height:96px;display:flex;align-items:center;flex-shrink:0}
+.hdr-left{width:280px;flex-shrink:0}
+.hdr-left-title{font-size:22px;font-weight:700;color:#E6EBF5;line-height:1.2}
+.hdr-left-sub{font-size:11px;letter-spacing:1px;color:#94A3C4;text-transform:uppercase}
+.hdr-center{flex:1;text-align:center}
+.hdr-center-title{font-size:40px;font-weight:700;color:#E6EBF5;line-height:1.1}
+.hdr-center-sub{font-size:13px;letter-spacing:2px;color:#94A3C4;text-transform:uppercase;margin-top:2px}
+.hdr-right{width:48px;flex-shrink:0;display:flex;justify-content:flex-end}
+.nav-btn{width:44px;height:44px;border:1px solid #334264;border-radius:6px;background:none;color:#94A3C4;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.nav-btn:hover{border-color:#4A5D8C;color:#E6EBF5}
 
-<div class="db-layout">
+/* === Row 2 — Main grid === */
+.main{flex:1;display:grid;grid-template-columns:1fr 440px;gap:32px;min-height:0;padding-bottom:16px}
 
-  <!-- Main area: room cards + board + feed -->
-  <div class="db-main">
+/* Left column */
+.left{display:flex;flex-direction:column;min-height:0;min-width:0}
 
-    <!-- Room cards -->
-    <section class="db-rooms">
-      <h2 class="db-label">Rooms</h2>
-      <div class="db-cards">
+/* Block A — Room cards */
+.rooms-label{font-size:13px;font-weight:600;letter-spacing:2px;color:#94A3C4;text-transform:uppercase;margin-bottom:12px;flex-shrink:0}
+.rooms-scroll{display:flex;overflow-x:auto;gap:24px;scroll-snap-type:x mandatory;flex-shrink:0;padding-bottom:8px}
+.rooms-scroll::-webkit-scrollbar{height:6px}
+.rooms-scroll::-webkit-scrollbar-thumb{background:#334264;border-radius:3px}
+.room-card{flex:0 0 460px;height:300px;background:#1C2740;border-radius:8px;overflow:hidden;display:flex;flex-direction:column;scroll-snap-align:start}
+.card-badge{height:32px;display:flex;align-items:center;padding:0 12px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
+.card-badge.alive{background:rgba(74,222,155,0.15);color:#4ADE9B}
+.card-badge.dormant{background:rgba(100,116,139,0.15);color:#64748B}
+.card-body{padding:16px;flex:1;display:flex;flex-direction:column}
+.card-name{font-size:22px;font-weight:700;color:#E6EBF5;margin-bottom:6px}
+.card-mission{font-size:13px;color:#94A3C4;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:auto}
+.card-sponsor{font-size:12px;color:#94A3C4;margin-top:8px}
+.card-activity{font-size:12px;color:#64748B}
+
+/* Block B — The board */
+.board-hdr{display:flex;align-items:baseline;gap:8px;margin:24px 0 12px;flex-shrink:0}
+.board-title{font-size:13px;font-weight:600;letter-spacing:2px;color:#94A3C4;text-transform:uppercase}
+.board-sub{font-size:11px;color:#64748B}
+.board-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;flex:1;min-height:0;align-content:start}
+.board-cell{height:92px;background:#1C2740;border:1px solid #334264;border-radius:6px;padding:12px;display:flex;flex-direction:column;justify-content:space-between}
+.bc-name{font-size:14px;font-weight:700;color:#E6EBF5}
+.bc-state{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
+
+/* Right column — Guru */
+.guru{background:#1C2740;border:1px solid #334264;border-radius:8px;display:flex;flex-direction:column;min-height:0}
+.guru-titlebar{height:56px;padding:0 16px;display:flex;align-items:center;gap:8px;flex-shrink:0;border-bottom:1px solid #334264}
+.guru-t{font-size:20px;font-weight:700;color:#E6EBF5}
+.guru-r{font-size:13px;color:#94A3C4}
+.guru-chips{height:56px;padding:0 16px;display:flex;align-items:center;flex-wrap:wrap;gap:8px;flex-shrink:0;border-bottom:1px solid #334264}
+.g-chip{font-size:11px;font-weight:600;text-transform:uppercase;padding:6px 10px;border-radius:4px}
+.guru-conv{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.g-msg{font-size:14px;line-height:1.5;padding:12px;border-radius:6px}
+.g-visitor{background:rgba(148,163,196,0.08);color:#94A3C4}
+.g-guru{background:rgba(74,222,155,0.06);color:#7CC4A8}
+.g-note{font-size:12px;color:#64748B;font-style:italic;border-top:1px solid #334264;padding-top:12px;margin-top:auto}
+.guru-input{height:56px;padding:0 16px;display:flex;align-items:center;gap:8px;flex-shrink:0;border-top:1px solid #334264}
+.guru-input input{flex:1;font-family:inherit;font-size:14px;padding:10px 14px;border:1px solid #334264;border-radius:6px;background:#141B2E;color:#E6EBF5}
+.guru-input input::placeholder{color:#64748B}
+.guru-input button{width:40px;height:40px;border:1px solid #334264;border-radius:6px;background:none;color:#94A3C4;font-size:18px;cursor:pointer}
+.guru-input button:hover{border-color:#4A5D8C;color:#E6EBF5}
+
+/* === Row 3 — Doors 72px === */
+.doors{height:72px;display:grid;grid-template-columns:repeat(3,1fr);gap:24px;flex-shrink:0;align-items:center}
+.door{display:flex;align-items:center;justify-content:center;height:56px;border:1px solid #4A5D8C;border-radius:6px;font-size:15px;font-weight:600;letter-spacing:1px;color:#94A3C4;text-decoration:none;text-transform:uppercase;transition:background .15s}
+.door:hover{background:rgba(74,93,140,0.12);color:#E6EBF5}
+
+/* === Mobile ≤1000px === */
+@media(max-width:1000px){
+  html,body{overflow:auto;height:auto}
+  .shell{height:auto;padding:0 16px;overflow:visible}
+  .hdr{height:auto;flex-direction:column;padding:16px 0;gap:4px}
+  .hdr-left{display:none}
+  .hdr-right{display:none}
+  .hdr-center{text-align:center}
+  .hdr-center-title{font-size:24px}
+  .main{grid-template-columns:1fr;height:auto;gap:24px}
+  .guru{order:-1;height:60vh;min-height:400px}
+  .rooms-scroll{overflow-x:auto}
+  .room-card{flex:0 0 85vw}
+  .board-grid{grid-template-columns:repeat(2,1fr)}
+  .doors{grid-template-columns:1fr;height:auto;gap:12px}
+  .door{height:52px}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- Row 1: Header -->
+  <header class="hdr">
+    <div class="hdr-left">
+      <div class="hdr-left-title">Last of the Real Estate</div>
+      <div class="hdr-left-sub">The Architecture of Cohabitation</div>
+    </div>
+    <div class="hdr-center">
+      <div class="hdr-center-title">Last of the Real Estate</div>
+      <div class="hdr-center-sub">The Architecture of Cohabitation</div>
+    </div>
+    <div class="hdr-right">
+      <button class="nav-btn" aria-label="Navigation">&#9776;</button>
+    </div>
+  </header>
+
+  <!-- Row 2: Main grid -->
+  <div class="main">
+
+    <!-- Left column -->
+    <div class="left">
+
+      <!-- Room cards -->
+      <div class="rooms-label">Rooms</div>
+      <div class="rooms-scroll">
         {aliveRooms.map(r => (
-          <article class="db-card">
-            <div class="card-top">
-              <span class={`card-alive ${r.alive ? 'is-alive' : 'is-dormant'}`}>{r.alive ? 'Alive' : 'Dormant'}</span>
-              <span class="card-state" style={`color: ${stateColors[r.state] || '#7c8ab5'}`}>{r.state}</span>
+          <article class="room-card" style={`border:1px solid ${SC[r.state] || '#334264'}`}>
+            <div class={`card-badge ${r.alive ? 'alive' : 'dormant'}`}>
+              {r.alive ? 'Alive' : 'Dormant'}
             </div>
-            <h3 class="card-title">{r.name}</h3>
-            <p class="card-desc">{r.description}</p>
-            <div class="card-foot">
-              <span>Sponsor: {r.sponsor}</span>
-              {r.lastActivity && <span>Last activity: {r.lastActivity}</span>}
+            <div class="card-body">
+              <div class="card-name">{r.name}</div>
+              <div class="card-mission">{r.description}</div>
+              <div class="card-sponsor">Sponsor: {r.sponsor}</div>
+              {r.lastActivity && <div class="card-activity">Last activity: {r.lastActivity}</div>}
             </div>
           </article>
         ))}
       </div>
-    </section>
 
-    <!-- The Board -->
-    <section class="db-board">
-      <h2 class="db-label">The Board <span class="db-label-sub">— read-only mirror of all rooms</span></h2>
+      <!-- The Board -->
+      <div class="board-hdr">
+        <span class="board-title">The Board</span>
+        <span class="board-sub">read-only mirror of room files</span>
+      </div>
       <div class="board-grid">
         {rooms.map(r => (
-          <div class="board-cell" style={`--bc: ${stateColors[r.state] || '#7c8ab5'}`}>
+          <div class="board-cell" style={`border-left:3px solid ${SC[r.state] || '#334264'}`}>
             <span class="bc-name">{r.name}</span>
-            <span class="bc-state">{r.state}</span>
+            <span class="bc-state" style={`color:${SC[r.state] || '#94A3C4'}`}>{r.state}</span>
           </div>
         ))}
       </div>
-    </section>
+    </div>
 
-    <!-- Council feed -->
-    {minutesDate && (
-      <section class="db-feed">
-        <h2 class="db-label">From the council &middot; {minutesDate}</h2>
-        {extracts.map(e => (
-          <p class="feed-line"><strong class="feed-who">{e.name}:</strong> {e.text}</p>
+    <!-- Right column: Guru -->
+    <aside class="guru">
+      <div class="guru-titlebar">
+        <span class="guru-t">The Guru</span>
+        <span class="guru-r">(AI Steward)</span>
+      </div>
+      <div class="guru-chips">
+        {Object.entries(SC).map(([state, color]) => (
+          <span class="g-chip" style={`background:${color}26;color:${color}`}>{state}</span>
         ))}
-        <a href={minutesUrl} class="feed-more">Full minutes &rarr;</a>
-      </section>
-    )}
+      </div>
+      <div class="guru-conv">
+        <div class="g-msg g-visitor"><strong>Visitor:</strong> Where is the Architecture mission?</div>
+        <div class="g-msg g-guru"><strong>The Guru:</strong> Refer to THE BOARD below; all rooms listed. Architecture is PROPOSED. <a href="/rooms" style="color:#60A5FA">(links)</a></div>
+        <p class="g-note">A front-door conversation is coming here — an open-weights model that reads the public record and answers honestly. For now: <a href="https://discord.gg/VU43nW77a" style="color:#60A5FA">Discord</a> or <a href="/submit" style="color:#60A5FA">submit a question</a>.</p>
+      </div>
+      <div class="guru-input">
+        <input type="text" placeholder="Conversation log..." disabled title="Coming soon" />
+        <button aria-label="Send" title="Coming soon">&#9654;</button>
+      </div>
+    </aside>
+
   </div>
 
-  <!-- Guru panel (right column on desktop, first on mobile) -->
-  <aside class="db-guru">
-    <h2 class="guru-head">The Guru <span class="guru-role">AI steward</span></h2>
-
-    <div class="guru-filters">
-      {Object.entries(stateColors).map(([state, color]) => (
-        <span class="guru-chip" style={`--gc: ${color}`}>{state}</span>
-      ))}
-    </div>
-
-    <div class="guru-chat">
-      <div class="guru-msg is-visitor"><strong>Visitor:</strong> Where is the Architecture mission?</div>
-      <div class="guru-msg is-guru"><strong>The Guru:</strong> All rooms are listed on THE BOARD. Architecture is PROPOSED — no named work yet. <a href="/rooms">See all rooms</a>.</div>
-      <p class="guru-note">A front-door conversation is coming here — an open-weights model that reads the public record and answers honestly. For now: <a href="https://discord.gg/VU43nW77a">Discord</a> or <a href="/submit">submit a question</a>.</p>
-    </div>
-
-    <div class="guru-input-wrap">
-      <input type="text" class="guru-input" placeholder="Ask the Guru..." disabled title="Coming soon" />
-    </div>
-  </aside>
+  <!-- Row 3: Doors -->
+  <nav class="doors">
+    <a href="https://ashram.lastoftherealestate.com" class="door">Watch Live</a>
+    <a href="/submit" class="door">Bring Work</a>
+    <a href="/for-agents" class="door">Bring Your AI (Local API)</a>
+  </nav>
 
 </div>
-
-<!-- Three doors -->
-<nav class="db-doors">
-  <a href="https://ashram.lastoftherealestate.com" class="door-btn">Watch Live</a>
-  <a href="/submit" class="door-btn">Bring Work</a>
-  <a href="/for-agents" class="door-btn door-accent">Bring Your AI (Local API)</a>
-</nav>
-
-</Base>
-
-<style>
-  /* ── Dashboard palette (homepage only, via body.dark-dashboard) ── */
-
-  .db-hero {
-    text-align: center;
-    padding: var(--space-xl) 0 var(--space-lg);
-  }
-
-  .db-title {
-    font-size: var(--text-2xl);
-    color: #dce4ed;
-    margin: 0;
-  }
-
-  .db-tag {
-    font-size: var(--text-base);
-    color: #8a9bb5;
-    margin-top: 4px;
-  }
-
-  /* ── Three-column desktop layout ── */
-
-  .db-layout {
-    display: grid;
-    grid-template-columns: 1fr 340px;
-    gap: 32px;
-    max-width: 1500px;
-    margin: 0 auto;
-    padding: 0 32px var(--space-lg);
-  }
-
-  .db-main { min-width: 0; }
-
-  /* ── Section labels ── */
-
-  .db-label {
-    font-family: var(--font-sans);
-    font-size: 13px;
-    font-weight: 600;
-    color: #8a9bb5;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin: 0 0 16px;
-    border-bottom: none;
-    padding-bottom: 0;
-  }
-
-  .db-label-sub {
-    font-weight: 400;
-    text-transform: none;
-    letter-spacing: 0;
-    opacity: 0.7;
-  }
-
-  /* ── Room cards ── */
-
-  .db-rooms { margin-bottom: 40px; }
-
-  .db-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 20px;
-  }
-
-  .db-card {
-    background: #1a2540;
-    border: 1px solid #2a3a5c;
-    border-radius: 8px;
-    padding: 24px;
-  }
-
-  .card-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-  }
-
-  .card-alive {
-    font-family: var(--font-sans);
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    padding: 2px 10px;
-    border-radius: 3px;
-  }
-
-  .card-alive.is-alive {
-    color: #3da89e;
-    background: rgba(61, 168, 158, 0.12);
-  }
-
-  .card-alive.is-dormant {
-    color: #7c8ab5;
-    background: rgba(124, 138, 181, 0.1);
-  }
-
-  .card-state {
-    font-family: var(--font-sans);
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-
-  .card-title {
-    font-size: var(--text-lg);
-    color: #dce4ed;
-    margin: 0 0 8px;
-  }
-
-  .card-desc {
-    font-size: var(--text-sm);
-    color: #8a9bb5;
-    line-height: 1.55;
-    margin-bottom: 12px;
-  }
-
-  .card-foot {
-    font-family: var(--font-sans);
-    font-size: 12px;
-    color: #5e6f8a;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  /* ── Board grid ── */
-
-  .db-board { margin-bottom: 40px; }
-
-  .board-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
-    gap: 8px;
-  }
-
-  .board-cell {
-    background: #1a2540;
-    border: 1px solid #2a3a5c;
-    border-left: 3px solid var(--bc);
-    border-radius: 5px;
-    padding: 10px 12px;
-  }
-
-  .bc-name {
-    display: block;
-    font-family: var(--font-sans);
-    font-size: 12px;
-    font-weight: 600;
-    color: #b0bdd0;
-    margin-bottom: 4px;
-  }
-
-  .bc-state {
-    font-family: var(--font-sans);
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--bc);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-
-  /* ── Feed ── */
-
-  .db-feed {
-    background: #1a2540;
-    border: 1px solid #2a3a5c;
-    border-radius: 8px;
-    padding: 20px 24px;
-    margin-bottom: 32px;
-  }
-
-  .feed-line {
-    font-size: var(--text-sm);
-    color: #8a9bb5;
-    line-height: 1.55;
-    margin-bottom: 6px;
-  }
-
-  .feed-who { color: #5a9fd4; }
-  .feed-more { font-size: var(--text-sm); }
-
-  /* ── Guru panel ── */
-
-  .db-guru {
-    background: #1a2540;
-    border: 1px solid #2a3a5c;
-    border-radius: 8px;
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    position: sticky;
-    top: 80px;
-    max-height: calc(100vh - 120px);
-  }
-
-  .guru-head {
-    font-size: var(--text-base);
-    color: #dce4ed;
-    margin: 0 0 12px;
-    border-bottom: none;
-    padding-bottom: 0;
-  }
-
-  .guru-role {
-    font-weight: 400;
-    font-size: 12px;
-    color: #5e6f8a;
-  }
-
-  .guru-filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    margin-bottom: 16px;
-  }
-
-  .guru-chip {
-    font-family: var(--font-sans);
-    font-size: 10px;
-    font-weight: 600;
-    color: var(--gc);
-    background: color-mix(in srgb, var(--gc) 10%, transparent);
-    padding: 3px 8px;
-    border-radius: 3px;
-  }
-
-  .guru-chat {
-    flex: 1;
-    overflow-y: auto;
-    margin-bottom: 12px;
-  }
-
-  .guru-msg {
-    font-size: 13px;
-    line-height: 1.5;
-    padding: 10px 12px;
-    border-radius: 6px;
-    margin-bottom: 8px;
-  }
-
-  .guru-msg.is-visitor {
-    background: rgba(90, 159, 212, 0.08);
-    color: #b0bdd0;
-  }
-
-  .guru-msg.is-guru {
-    background: rgba(61, 168, 158, 0.08);
-    color: #8abfb9;
-  }
-
-  .guru-note {
-    font-size: 12px;
-    color: #5e6f8a;
-    font-style: italic;
-    border-top: 1px solid #2a3a5c;
-    padding-top: 12px;
-    margin-top: 8px;
-  }
-
-  .guru-input-wrap {
-    border-top: 1px solid #2a3a5c;
-    padding-top: 12px;
-  }
-
-  .guru-input {
-    width: 100%;
-    font-family: inherit;
-    font-size: 13px;
-    padding: 10px 14px;
-    border: 1px solid #2a3a5c;
-    border-radius: 5px;
-    background: #0f1a30;
-    color: #b0bdd0;
-  }
-
-  .guru-input::placeholder { color: #4a5a75; }
-
-  /* ── Three doors ── */
-
-  .db-doors {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    max-width: 1500px;
-    margin: 0 auto;
-    padding: 0 32px var(--space-xl);
-  }
-
-  .door-btn {
-    display: block;
-    text-align: center;
-    font-family: var(--font-sans);
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 0.03em;
-    padding: 14px 20px;
-    border: 1px solid #3a4d70;
-    border-radius: 6px;
-    color: #b0bdd0;
-    text-decoration: none;
-    transition: background 0.15s, border-color 0.15s;
-  }
-
-  .door-btn:hover {
-    background: #1a2540;
-    border-color: #5a9fd4;
-    color: #dce4ed;
-  }
-
-  .door-accent {
-    border-color: #c9a84c;
-    color: #c9a84c;
-  }
-
-  .door-accent:hover {
-    background: rgba(201, 168, 76, 0.08);
-    border-color: #e0be5a;
-    color: #e0be5a;
-  }
-
-  /* ── Mobile: single column, Guru first ── */
-
-  @media (max-width: 768px) {
-    .db-layout {
-      grid-template-columns: 1fr;
-      padding: 0 16px var(--space-lg);
-      gap: 20px;
-    }
-
-    .db-guru {
-      position: static;
-      max-height: none;
-      order: -1;
-    }
-
-    .db-cards {
-      grid-template-columns: 1fr;
-    }
-
-    .db-doors {
-      grid-template-columns: 1fr;
-      padding: 0 16px var(--space-lg);
-    }
-
-    .db-hero { padding: var(--space-lg) 16px var(--space-md); }
-  }
-</style>
+</body>
+</html>
