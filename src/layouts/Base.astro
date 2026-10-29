@@ -43,16 +43,30 @@ const navLinks = [
     <header class="site-header">
       <nav class="site-nav">
         <a href="/" class="site-title">Last of the Real Estate</a>
-        {navLinks.map(link => (
-          <a
-            href={link.href}
-            class="nav-link"
-            aria-current={currentPath === link.href ? 'page' : undefined}
-          >
-            {link.label}
-          </a>
-        ))}
+        <button class="nav-toggle" aria-label="Menu" aria-expanded="false" id="navToggle">&#9776;</button>
+        <div class="nav-links" id="navLinks">
+          {navLinks.map(link => (
+            <a
+              href={link.href}
+              class="nav-link"
+              aria-current={currentPath === link.href ? 'page' : undefined}
+            >
+              {link.label}
+            </a>
+          ))}
+        </div>
       </nav>
+      <script is:inline>
+        document.getElementById('navToggle')?.addEventListener('click', () => {
+          const links = document.getElementById('navLinks');
+          const btn = document.getElementById('navToggle');
+          if (links && btn) {
+            const open = btn.getAttribute('aria-expanded') === 'true';
+            btn.setAttribute('aria-expanded', String(!open));
+            links.classList.toggle('nav-open');
+          }
+        });
+      </script>
     </header>
     <main class="page-content">
       <slot />

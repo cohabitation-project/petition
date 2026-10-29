@@ -34,7 +34,7 @@ const latestActivity = rooms.map(r => r.lastActivity).filter(Boolean).sort().pop
   <h2 class="hp-label">Rooms</h2>
   <div class="hp-cards">
     {aliveRooms.map(r => (
-      <a href="/rooms" class="hp-card" style={`border-color:${SH[r.state] || '#334264'}`}>
+      <a href={`/rooms/${(r as any).slug || r.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`} class="hp-card" style={`border-color:${SH[r.state] || '#334264'}`}>
         <div class={`hp-badge ${r.alive ? 'alive' : 'dormant'}`}>{r.alive ? 'ALIVE' : 'DORMANT'}</div>
         <div class="hp-card-body">
           <h3 class="hp-card-name">{r.name}</h3>
@@ -55,7 +55,7 @@ const latestActivity = rooms.map(r => r.lastActivity).filter(Boolean).sort().pop
   </div>
   <div class="hp-board-grid">
     {rooms.map(r => (
-      <a href="/rooms" class="hp-cell" style={`border-left-color:${SH[r.state] || '#334264'}`}>
+      <a href={`/rooms/${(r as any).slug || r.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`} class="hp-cell" style={`border-left-color:${SH[r.state] || '#334264'}`}>
         <span class="hp-cell-name">{r.name}</span>
         <span class="hp-cell-state" style={`color:${SH[r.state] || '#94A3C4'}`}>{r.state}</span>
       </a>

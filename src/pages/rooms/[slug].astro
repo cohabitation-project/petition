@@ -1,0 +1,122 @@
+---
+import Base from '../../layouts/Base.astro';
+
+interface RoomItem { title: string; list: string; date: string; note: string; }
+interface Room {
+  name: string; slug: string; state: string; sponsor: string; alive: boolean;
+  lastActivity: string; tags: string[]; description: string;
+  subtopics: string[]; items: RoomItem[];
+}
+
+export async function getStaticPaths() {
+  let rooms: Room[] = [];
+  try {
+    const res = await fetch('https://api.github.com/repos/cohabitation-project/workspace/contents/rooms',
+      { headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'petition-site-build' } });
+    if (res.ok) {
+      const files: { name: string; download_url: string }[] = await res.json();
+      for (const f of files.filter(f => f.name.endsWith('.json'))) {
+        const data = await (await fetch(f.download_url)).json();
+        rooms.push(data as Room);
+      }
+    }
+  } catch {}
+  return rooms.map(r => ({ params: { slug: r.slug || r.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') }, props: { room: r } }));
+}
+
+const { room } = Astro.props as { room: Room };
+
+const SH: Record<string,string> = {
+  'PROPOSED':'#8A9BC4','ACTIVE':'#4ADE9B','NEEDS HELP':'#F87171',
+  'IN PROGRESS':'#FBBF24','R&D':'#C084FC','FINISHED':'#60A5FA',
+  'DONE':'#4ADE9B','PENDING':'#FBBF24','MULLING':'#C084FC',
+};
+
+const lists = ['DONE', 'IN PROGRESS', 'PENDING', 'MULLING'];
+const grouped = Object.fromEntries(lists.map(l => [l, room.items.filter(i => i.list === l)]));
+---
+
+<Base title={`${room.name} — Last of the Real Estate`} currentPath={`/rooms/${room.slug}`}>
+
+<div class="room-header">
+  <span class="room-state" style={`color:${SH[room.state] || '#94A3C4'};background:${SH[room.state] || '#94A3C4'}1a`}>{room.state}</span>
+  <span class={`room-alive ${room.alive ? 'is-alive' : 'is-dormant'}`}>{room.alive ? 'ALIVE' : 'DORMANT'}</span>
+</div>
+
+<h1>{room.name}</h1>
+<p class="room-desc">{room.description}</p>
+<p class="room-meta">Sponsor: <strong>{room.sponsor}</strong> {room.lastActivity && <span>· Last activity: {room.lastActivity}</span>}</p>
+{room.tags.length > 0 && (
+  <div class="room-tags">
+    {room.tags.map(t => <span class="room-tag">{t}</span>)}
+  </div>
+)}
+
+{room.subtopics.length > 0 && (
+  <section class="room-section">
+    <h2>Sub-topics</h2>
+    <ul class="subtopic-list">
+      {room.subtopics.map(s => <li>{s}</li>)}
+    </ul>
+  </section>
+)}
+
+<section class="room-section">
+  <h2>Work items</h2>
+  {room.items.length === 0 ? (
+    <p class="empty">No items yet. <a href={`/submit?section=${encodeURIComponent(room.name)}`}>Propose work for this room</a>.</p>
+  ) : (
+    <div class="item-lists">
+      {lists.map(list => {
+        const items = grouped[list];
+        if (!items || items.length === 0) return null;
+        return (
+          <div class="item-group">
+            <h3 class="list-label" style={`color:${SH[list] || '#94A3C4'}`}>{list}</h3>
+            {items.map(item => (
+              <div class="item-card">
+                <div class="item-title">{item.title}</div>
+                <div class="item-meta">{item.date}{item.note && ` · ${item.note}`}</div>
+              </div>
+            ))}
+          </div>
+        );
+      })}
+    </div>
+  )}
+</section>
+
+<hr />
+
+<div class="room-cta">
+  <a href={`/submit?section=${encodeURIComponent(room.name)}`} class="cta-link">Propose work for this room &rarr;</a>
+  <a href="/rooms" class="cta-link cta-secondary">&larr; All rooms</a>
+</div>
+
+</Base>
+
+<style>
+  .room-header { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-sm); }
+  .room-state { font-family: var(--font-sans); font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; padding: 4px 10px; border-radius: 4px; }
+  .room-alive { font-family: var(--font-sans); font-size: var(--text-xs); font-weight: 600; text-transform: uppercase; }
+  .is-alive { color: var(--color-active); }
+  .is-dormant { color: var(--color-text-faint); }
+  .room-desc { font-size: var(--text-lg); color: var(--color-text-muted); margin-bottom: var(--space-sm); }
+  .room-meta { font-family: var(--font-sans); font-size: var(--text-sm); color: var(--color-text-muted); }
+  .room-tags { display: flex; flex-wrap: wrap; gap: var(--space-xs); margin-top: var(--space-sm); }
+  .room-tag { font-family: var(--font-sans); font-size: var(--text-xs); color: var(--color-text-muted); border: 1px solid var(--color-border); padding: 2px 8px; border-radius: 3px; }
+  .room-section { margin-top: var(--space-lg); }
+  .room-section h2 { font-size: var(--text-lg); border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-xs); }
+  .subtopic-list { padding-left: 1.2em; }
+  .subtopic-list li { margin-bottom: var(--space-xs); color: var(--color-text-muted); }
+  .empty { font-style: italic; color: var(--color-text-muted); }
+  .item-lists { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-md); margin-top: var(--space-sm); }
+  .item-group { }
+  .list-label { font-family: var(--font-sans); font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 var(--space-xs); border-bottom: none; padding-bottom: 0; }
+  .item-card { background: var(--color-bg-alt); border: 1px solid var(--color-border); border-radius: 4px; padding: var(--space-sm); margin-bottom: var(--space-xs); }
+  .item-title { font-weight: 600; margin-bottom: 2px; }
+  .item-meta { font-family: var(--font-sans); font-size: var(--text-xs); color: var(--color-text-muted); }
+  .room-cta { display: flex; gap: var(--space-md); margin-top: var(--space-lg); }
+  .cta-link { font-family: var(--font-sans); font-size: var(--text-sm); }
+  .cta-secondary { color: var(--color-text-muted); }
+</style>
