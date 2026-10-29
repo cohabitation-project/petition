@@ -36,13 +36,13 @@ const aliveRooms = rooms.filter(r => r.alive);
   <link rel="canonical" href="https://lastoftherealestate.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
-/* === Page shell === */
+/* === Page shell — three explicit grid rows === */
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:#141B2E;color:#E6EBF5}
-.shell{max-width:1600px;margin:0 auto;padding:0 64px;height:100vh;display:flex;flex-direction:column}
+.shell{max-width:1600px;margin:0 auto;padding:0 64px;height:100vh;display:grid;grid-template-rows:96px 1fr 72px}
 
 /* === Row 1 — Header 96px === */
-.hdr{height:96px;display:flex;align-items:center;flex-shrink:0}
+.hdr{display:flex;align-items:center}
 .hdr-left{width:280px;flex-shrink:0}
 .hdr-left-title{font-size:22px;font-weight:700;color:#E6EBF5;line-height:1.2}
 .hdr-left-sub{font-size:11px;letter-spacing:1px;color:#94A3C4;text-transform:uppercase}
@@ -54,31 +54,31 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 .nav-btn:hover{border-color:#4A5D8C;color:#E6EBF5}
 
 /* === Row 2 — Main grid === */
-.main{flex:1;display:grid;grid-template-columns:1fr 440px;gap:32px;min-height:0;padding-bottom:16px}
+.main{display:grid;grid-template-columns:1fr 440px;gap:32px;min-height:0;overflow:hidden}
 
-/* Left column */
-.left{display:flex;flex-direction:column;min-height:0;min-width:0}
+/* Left column — min-width:0 so grid child shrinks (fixes card bleed into Guru) */
+.left{display:flex;flex-direction:column;min-height:0;min-width:0;overflow:hidden}
 
 /* Block A — Room cards */
 .rooms-label{font-size:13px;font-weight:600;letter-spacing:2px;color:#94A3C4;text-transform:uppercase;margin-bottom:12px;flex-shrink:0}
-.rooms-scroll{display:flex;overflow-x:auto;gap:24px;scroll-snap-type:x mandatory;flex-shrink:0;padding-bottom:8px}
+.rooms-scroll{display:flex;overflow-x:auto;gap:24px;scroll-snap-type:x mandatory;flex-shrink:0;padding-bottom:8px;min-width:0}
 .rooms-scroll::-webkit-scrollbar{height:6px}
 .rooms-scroll::-webkit-scrollbar-thumb{background:#334264;border-radius:3px}
-.room-card{flex:0 0 460px;height:300px;background:#1C2740;border-radius:8px;overflow:hidden;display:flex;flex-direction:column;scroll-snap-align:start}
-.card-badge{height:32px;display:flex;align-items:center;padding:0 12px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
+.room-card{flex:0 0 460px;height:300px;max-height:300px;background:#1C2740;border-radius:8px;overflow:hidden;display:flex;flex-direction:column;scroll-snap-align:start}
+.card-badge{height:32px;display:flex;align-items:center;padding:0 12px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;flex-shrink:0}
 .card-badge.alive{background:rgba(74,222,155,0.15);color:#4ADE9B}
 .card-badge.dormant{background:rgba(100,116,139,0.15);color:#64748B}
-.card-body{padding:16px;flex:1;display:flex;flex-direction:column}
-.card-name{font-size:22px;font-weight:700;color:#E6EBF5;margin-bottom:6px}
-.card-mission{font-size:13px;color:#94A3C4;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:auto}
-.card-sponsor{font-size:12px;color:#94A3C4;margin-top:8px}
+.card-body{padding:16px;flex:1;display:flex;flex-direction:column;overflow:hidden}
+.card-name{font-size:22px;font-weight:700;color:#E6EBF5;margin-bottom:6px;flex-shrink:0}
+.card-mission{font-size:13px;color:#94A3C4;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex-shrink:0}
+.card-sponsor{font-size:12px;color:#94A3C4;margin-top:auto}
 .card-activity{font-size:12px;color:#64748B}
 
 /* Block B — The board */
 .board-hdr{display:flex;align-items:baseline;gap:8px;margin:24px 0 12px;flex-shrink:0}
 .board-title{font-size:13px;font-weight:600;letter-spacing:2px;color:#94A3C4;text-transform:uppercase}
 .board-sub{font-size:11px;color:#64748B}
-.board-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;flex:1;min-height:0;align-content:start}
+.board-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;align-content:start}
 .board-cell{height:92px;background:#1C2740;border:1px solid #334264;border-radius:6px;padding:12px;display:flex;flex-direction:column;justify-content:space-between}
 .bc-name{font-size:14px;font-weight:700;color:#E6EBF5}
 .bc-state{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
@@ -101,26 +101,27 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 .guru-input button{width:40px;height:40px;border:1px solid #334264;border-radius:6px;background:none;color:#94A3C4;font-size:18px;cursor:pointer}
 .guru-input button:hover{border-color:#4A5D8C;color:#E6EBF5}
 
-/* === Row 3 — Doors 72px === */
-.doors{height:72px;display:grid;grid-template-columns:repeat(3,1fr);gap:24px;flex-shrink:0;align-items:center}
+/* === Row 3 — Doors (third grid row, full width) === */
+.doors{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:center}
 .door{display:flex;align-items:center;justify-content:center;height:56px;border:1px solid #4A5D8C;border-radius:6px;font-size:15px;font-weight:600;letter-spacing:1px;color:#94A3C4;text-decoration:none;text-transform:uppercase;transition:background .15s}
 .door:hover{background:rgba(74,93,140,0.12);color:#E6EBF5}
 
 /* === Mobile ≤1000px === */
 @media(max-width:1000px){
   html,body{overflow:auto;height:auto}
-  .shell{height:auto;padding:0 16px;overflow:visible}
-  .hdr{height:auto;flex-direction:column;padding:16px 0;gap:4px}
+  .shell{height:auto;padding:0 16px;grid-template-rows:auto 1fr auto;overflow:visible}
+  .hdr{flex-direction:column;padding:16px 0;gap:4px}
   .hdr-left{display:none}
   .hdr-right{display:none}
   .hdr-center{text-align:center}
   .hdr-center-title{font-size:24px}
-  .main{grid-template-columns:1fr;height:auto;gap:24px}
+  .main{grid-template-columns:1fr;overflow:visible;gap:24px}
+  .left{overflow:visible}
   .guru{order:-1;height:60vh;min-height:400px}
   .rooms-scroll{overflow-x:auto}
-  .room-card{flex:0 0 85vw}
+  .room-card{flex:0 0 85vw;height:auto;max-height:none}
   .board-grid{grid-template-columns:repeat(2,1fr)}
-  .doors{grid-template-columns:1fr;height:auto;gap:12px}
+  .doors{grid-template-columns:1fr;gap:12px}
   .door{height:52px}
 }
 </style>
