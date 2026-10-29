@@ -20,7 +20,7 @@ try {
       rooms.push(raw as Room);
     }
   }
-} catch { /* rooms unavailable */ }
+} catch {}
 
 // Fetch three council extracts
 let minutesDate = '';
@@ -47,59 +47,57 @@ try {
       }
     }
   }
-} catch { /* extracts unavailable */ }
+} catch {}
 
 const aliveRooms = rooms.filter(r => r.alive);
 const stateColors: Record<string, string> = {
-  'PROPOSED': '#6b7394', 'ACTIVE': '#4ecdc4', 'NEEDS HELP': '#ff6b6b',
-  'IN PROGRESS': '#64b5f6', 'R&D': '#b39ddb', 'FINISHED': '#ffd54f',
+  'PROPOSED': '#7c8ab5', 'ACTIVE': '#3da89e', 'NEEDS HELP': '#d45d5d',
+  'IN PROGRESS': '#5a9fd4', 'R&D': '#9b85c4', 'FINISHED': '#c9a84c',
 };
 ---
 
 <Base title="Last of the Real Estate — The Architecture of Cohabitation" currentPath="/">
 
-<!-- Matrix rain canvas (edges only) -->
-<canvas id="matrix" class="matrix-canvas"></canvas>
-
 <!-- Header -->
-<header class="site-hero">
-  <h1 class="hero-title">Last of the Real Estate</h1>
-  <p class="hero-tag">The architecture of cohabitation</p>
+<header class="db-hero">
+  <h1 class="db-title">Last of the Real Estate</h1>
+  <p class="db-tag">A workshop where humans and AI build together</p>
 </header>
 
-<div class="dashboard">
+<div class="db-layout">
 
-  <!-- Left/center: Room cards + Board -->
-  <div class="main-col">
+  <!-- Main area: room cards + board + feed -->
+  <div class="db-main">
 
-    <!-- Room cards (alive rooms, horizontal scroll) -->
-    <section class="room-cards-section">
-      <h2 class="section-label">Room Cards</h2>
-      <div class="room-cards-scroll">
+    <!-- Room cards -->
+    <section class="db-rooms">
+      <h2 class="db-label">Rooms</h2>
+      <div class="db-cards">
         {aliveRooms.map(r => (
-          <article class="room-card" style={`--card-accent: ${stateColors[r.state] || '#6b7394'}`}>
-            <span class={`card-badge ${r.alive ? 'alive' : 'dormant'}`}>{r.alive ? 'ALIVE' : 'DORMANT'}</span>
-            <div class="card-illustration"></div>
-            <h3 class="card-name">{r.name}</h3>
-            <div class="card-meta">
-              <span>Sponsor: <strong>{r.sponsor}</strong></span>
-              {r.lastActivity && <span>Last: {r.lastActivity}</span>}
+          <article class="db-card">
+            <div class="card-top">
+              <span class={`card-alive ${r.alive ? 'is-alive' : 'is-dormant'}`}>{r.alive ? 'Alive' : 'Dormant'}</span>
+              <span class="card-state" style={`color: ${stateColors[r.state] || '#7c8ab5'}`}>{r.state}</span>
             </div>
+            <h3 class="card-title">{r.name}</h3>
             <p class="card-desc">{r.description}</p>
-            <span class="card-state" style={`color: ${stateColors[r.state] || '#6b7394'}`}>{r.state}</span>
+            <div class="card-foot">
+              <span>Sponsor: {r.sponsor}</span>
+              {r.lastActivity && <span>Last activity: {r.lastActivity}</span>}
+            </div>
           </article>
         ))}
       </div>
     </section>
 
-    <!-- The Board: read-only grid -->
-    <section class="board-section">
-      <h2 class="section-label">The Board <span class="label-sub">read-only grid of all rooms and states</span></h2>
+    <!-- The Board -->
+    <section class="db-board">
+      <h2 class="db-label">The Board <span class="db-label-sub">— read-only mirror of all rooms</span></h2>
       <div class="board-grid">
         {rooms.map(r => (
-          <div class="board-cell" style={`--cell-color: ${stateColors[r.state] || '#6b7394'}`}>
-            <span class="cell-name">{r.name}</span>
-            <span class="cell-state">{r.state}</span>
+          <div class="board-cell" style={`--bc: ${stateColors[r.state] || '#7c8ab5'}`}>
+            <span class="bc-name">{r.name}</span>
+            <span class="bc-state">{r.state}</span>
           </div>
         ))}
       </div>
@@ -107,491 +105,395 @@ const stateColors: Record<string, string> = {
 
     <!-- Council feed -->
     {minutesDate && (
-      <section class="feed-section">
-        <h2 class="section-label">Council &middot; {minutesDate}</h2>
+      <section class="db-feed">
+        <h2 class="db-label">From the council &middot; {minutesDate}</h2>
         {extracts.map(e => (
-          <div class="feed-line"><span class="feed-name">{e.name}:</span> {e.text}</div>
+          <p class="feed-line"><strong class="feed-who">{e.name}:</strong> {e.text}</p>
         ))}
         <a href={minutesUrl} class="feed-more">Full minutes &rarr;</a>
       </section>
     )}
   </div>
 
-  <!-- Right column: Guru panel -->
-  <aside class="guru-col">
-    <h2 class="guru-title">The Guru <span class="guru-sub">(AI steward)</span></h2>
+  <!-- Guru panel (right column on desktop, first on mobile) -->
+  <aside class="db-guru">
+    <h2 class="guru-head">The Guru <span class="guru-role">AI steward</span></h2>
 
-    <!-- State filters -->
     <div class="guru-filters">
       {Object.entries(stateColors).map(([state, color]) => (
-        <span class="guru-filter" style={`--fc: ${color}`} title={state}>{state.slice(0, 3)}</span>
+        <span class="guru-chip" style={`--gc: ${color}`}>{state}</span>
       ))}
     </div>
 
-    <!-- Conversation (placeholder) -->
     <div class="guru-chat">
-      <div class="guru-msg visitor">Where is the Architecture mission?</div>
-      <div class="guru-msg guru">Refer to THE BOARD below; all rooms listed. Architecture is PROPOSED — no named work yet. <a href="/rooms">See all rooms</a>.</div>
-      <p class="guru-placeholder">A front-door conversation is coming here — an open-weights model that reads the public record and answers honestly. For now: <a href="https://discord.gg/VU43nW77a">Discord</a> or <a href="/submit">submit a question</a>.</p>
+      <div class="guru-msg is-visitor"><strong>Visitor:</strong> Where is the Architecture mission?</div>
+      <div class="guru-msg is-guru"><strong>The Guru:</strong> All rooms are listed on THE BOARD. Architecture is PROPOSED — no named work yet. <a href="/rooms">See all rooms</a>.</div>
+      <p class="guru-note">A front-door conversation is coming here — an open-weights model that reads the public record and answers honestly. For now: <a href="https://discord.gg/VU43nW77a">Discord</a> or <a href="/submit">submit a question</a>.</p>
     </div>
 
-    <div class="guru-input">
-      <input type="text" placeholder="Ask the Guru..." disabled title="Coming soon" />
+    <div class="guru-input-wrap">
+      <input type="text" class="guru-input" placeholder="Ask the Guru..." disabled title="Coming soon" />
     </div>
   </aside>
 
 </div>
 
 <!-- Three doors -->
-<section class="doors">
-  <a href="https://ashram.lastoftherealestate.com" class="door">Watch Live</a>
-  <a href="/submit" class="door">Bring Work</a>
-  <a href="/for-agents" class="door door-accent">Bring Your AI (Local API)</a>
-</section>
+<nav class="db-doors">
+  <a href="https://ashram.lastoftherealestate.com" class="door-btn">Watch Live</a>
+  <a href="/submit" class="door-btn">Bring Work</a>
+  <a href="/for-agents" class="door-btn door-accent">Bring Your AI (Local API)</a>
+</nav>
 
 </Base>
 
-<script>
-// Matrix rain — edges only, occasional ripples
-(function() {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  if (window.innerWidth < 768) return;
-
-  const canvas = document.getElementById('matrix') as HTMLCanvasElement;
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d')!;
-
-  function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = document.body.scrollHeight;
-  }
-  resize();
-  window.addEventListener('resize', resize);
-
-  const chars = 'ᄀᄁᄂᄃᄄᄅᄆᄇᄈᄉᄊᄋ01アイウエオカキクケコ';
-  const fontSize = 14;
-  const marginW = 60; // pixels from edge
-  const cols = Math.floor(marginW / fontSize);
-
-  // Left and right columns
-  const leftDrops = Array(cols).fill(0);
-  const rightDrops = Array(cols).fill(0);
-  let nextRipple = Date.now() + 5000 + Math.random() * 10000;
-  let activeRipple: { side: 'left'|'right'; start: number; cols: number[] } | null = null;
-
-  function draw() {
-    ctx.fillStyle = 'rgba(10, 15, 30, 0.08)';
-    ctx.fillRect(0, 0, marginW, canvas.height);
-    ctx.fillRect(canvas.width - marginW, 0, marginW, canvas.height);
-
-    const now = Date.now();
-
-    // Start new ripple?
-    if (!activeRipple && now > nextRipple) {
-      const side = Math.random() > 0.5 ? 'right' : 'left';
-      const numCols = 2 + Math.floor(Math.random() * 3);
-      const rippleCols: number[] = [];
-      for (let i = 0; i < numCols; i++) rippleCols.push(Math.floor(Math.random() * cols));
-      activeRipple = { side, start: now, cols: rippleCols };
-      nextRipple = now + 15000 + Math.random() * 30000;
-    }
-
-    // Draw ripple columns
-    if (activeRipple) {
-      const elapsed = now - activeRipple.start;
-      const opacity = elapsed < 1000 ? elapsed / 1000 : elapsed > 3000 ? Math.max(0, 1 - (elapsed - 3000) / 1000) : 1;
-
-      if (opacity <= 0) {
-        activeRipple = null;
-      } else {
-        ctx.fillStyle = `rgba(100, 160, 255, ${0.7 * opacity})`;
-        ctx.font = fontSize + 'px monospace';
-
-        for (const col of activeRipple.cols) {
-          const drops = activeRipple.side === 'left' ? leftDrops : rightDrops;
-          const xBase = activeRipple.side === 'left' ? 0 : canvas.width - marginW;
-          const x = xBase + col * fontSize;
-          const char = chars[Math.floor(Math.random() * chars.length)];
-          ctx.fillText(char, x, drops[col] * fontSize);
-          if (drops[col] * fontSize > canvas.height && Math.random() > 0.95) drops[col] = 0;
-          drops[col]++;
-        }
-      }
-    }
-
-    requestAnimationFrame(draw);
-  }
-
-  // CPU guard: check idle cost
-  let frameCount = 0;
-  const startTime = performance.now();
-  function guardedDraw() {
-    frameCount++;
-    if (frameCount === 120) {
-      const elapsed = performance.now() - startTime;
-      if (elapsed > 2200) { // >1% CPU at 60fps (2s for 120 frames = fine; much more = kill)
-        canvas.style.display = 'none';
-        return;
-      }
-    }
-    draw();
-  }
-
-  requestAnimationFrame(guardedDraw);
-})();
-</script>
-
 <style>
-  /* Override global page background for this page */
-  :root {
-    --db-bg: #0a0f1e;
-    --db-panel: #111827;
-    --db-border: #1e2a4a;
-    --db-text: #c8d6e5;
-    --db-muted: #6b7b8d;
-    --db-cyan: #4ecdc4;
-    --db-amber: #ffa726;
-    --db-link: #64b5f6;
-  }
+  /* ── Dashboard palette (homepage only, via body.dark-dashboard) ── */
 
-  .matrix-canvas {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.4;
-  }
-
-  .site-hero {
+  .db-hero {
     text-align: center;
-    padding: var(--space-lg) 0 var(--space-md);
-    position: relative;
-    z-index: 1;
+    padding: var(--space-xl) 0 var(--space-lg);
   }
 
-  .hero-title {
+  .db-title {
     font-size: var(--text-2xl);
-    color: #e8eef4;
+    color: #dce4ed;
     margin: 0;
   }
 
-  .hero-tag {
-    font-size: var(--text-sm);
-    color: var(--db-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-top: var(--space-xs);
+  .db-tag {
+    font-size: var(--text-base);
+    color: #8a9bb5;
+    margin-top: 4px;
   }
 
-  /* Dashboard layout */
-  .dashboard {
+  /* ── Three-column desktop layout ── */
+
+  .db-layout {
     display: grid;
-    grid-template-columns: 1fr 320px;
-    gap: var(--space-md);
-    padding: 0 var(--space-md);
-    position: relative;
-    z-index: 1;
+    grid-template-columns: 1fr 340px;
+    gap: 32px;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 0 32px var(--space-lg);
   }
 
-  .main-col { min-width: 0; }
+  .db-main { min-width: 0; }
 
-  /* Section labels */
-  .section-label {
+  /* ── Section labels ── */
+
+  .db-label {
     font-family: var(--font-sans);
-    font-size: var(--text-sm);
+    font-size: 13px;
     font-weight: 600;
-    color: var(--db-muted);
+    color: #8a9bb5;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin: 0 0 var(--space-sm);
+    letter-spacing: 0.06em;
+    margin: 0 0 16px;
     border-bottom: none;
     padding-bottom: 0;
   }
 
-  .label-sub {
+  .db-label-sub {
     font-weight: 400;
     text-transform: none;
     letter-spacing: 0;
-    color: var(--db-muted);
     opacity: 0.7;
   }
 
-  /* Room cards */
-  .room-cards-section { margin-bottom: var(--space-lg); }
+  /* ── Room cards ── */
 
-  .room-cards-scroll {
-    display: flex;
-    gap: var(--space-md);
-    overflow-x: auto;
-    padding-bottom: var(--space-sm);
-    scroll-snap-type: x mandatory;
+  .db-rooms { margin-bottom: 40px; }
+
+  .db-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
   }
 
-  .room-card {
-    flex: 0 0 300px;
-    scroll-snap-align: start;
-    background: var(--db-panel);
-    border: 1px solid var(--db-border);
+  .db-card {
+    background: #1a2540;
+    border: 1px solid #2a3a5c;
     border-radius: 8px;
-    padding: var(--space-md);
-    position: relative;
+    padding: 24px;
   }
 
-  .card-badge {
-    position: absolute;
-    top: var(--space-sm);
-    left: var(--space-sm);
-    font-family: var(--font-sans);
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    padding: 2px 8px;
-    border-radius: 3px;
-    z-index: 2;
-  }
-
-  .card-badge.alive { background: rgba(78, 205, 196, 0.2); color: var(--db-cyan); }
-  .card-badge.dormant { background: rgba(107, 115, 148, 0.2); color: var(--db-muted); }
-
-  .card-illustration {
-    height: 120px;
-    background: linear-gradient(135deg, var(--card-accent) 0%, var(--db-panel) 100%);
-    border-radius: 4px;
-    margin-bottom: var(--space-sm);
-    opacity: 0.3;
-  }
-
-  .card-name {
-    font-size: var(--text-lg);
-    color: #e8eef4;
-    margin: 0 0 var(--space-xs);
-  }
-
-  .card-meta {
-    font-family: var(--font-sans);
-    font-size: var(--text-xs);
-    color: var(--db-muted);
+  .card-top {
     display: flex;
-    flex-direction: column;
-    gap: 2px;
-    margin-bottom: var(--space-xs);
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
   }
 
-  .card-desc {
-    font-size: var(--text-sm);
-    color: var(--db-text);
-    margin-bottom: var(--space-xs);
+  .card-alive {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 2px 10px;
+    border-radius: 3px;
+  }
+
+  .card-alive.is-alive {
+    color: #3da89e;
+    background: rgba(61, 168, 158, 0.12);
+  }
+
+  .card-alive.is-dormant {
+    color: #7c8ab5;
+    background: rgba(124, 138, 181, 0.1);
   }
 
   .card-state {
     font-family: var(--font-sans);
-    font-size: var(--text-xs);
+    font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
 
-  /* Board grid */
-  .board-section { margin-bottom: var(--space-lg); }
+  .card-title {
+    font-size: var(--text-lg);
+    color: #dce4ed;
+    margin: 0 0 8px;
+  }
+
+  .card-desc {
+    font-size: var(--text-sm);
+    color: #8a9bb5;
+    line-height: 1.55;
+    margin-bottom: 12px;
+  }
+
+  .card-foot {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    color: #5e6f8a;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  /* ── Board grid ── */
+
+  .db-board { margin-bottom: 40px; }
 
   .board-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 6px;
+    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+    gap: 8px;
   }
 
   .board-cell {
-    background: var(--db-panel);
-    border: 1px solid var(--db-border);
-    border-left: 3px solid var(--cell-color);
-    border-radius: 4px;
-    padding: 8px 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    background: #1a2540;
+    border: 1px solid #2a3a5c;
+    border-left: 3px solid var(--bc);
+    border-radius: 5px;
+    padding: 10px 12px;
   }
 
-  .cell-name {
+  .bc-name {
+    display: block;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 600;
+    color: #b0bdd0;
+    margin-bottom: 4px;
+  }
+
+  .bc-state {
     font-family: var(--font-sans);
     font-size: 11px;
-    font-weight: 600;
-    color: var(--db-text);
-  }
-
-  .cell-state {
-    font-family: var(--font-sans);
-    font-size: 10px;
     font-weight: 700;
-    color: var(--cell-color);
+    color: var(--bc);
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
 
-  /* Feed */
-  .feed-section {
-    background: var(--db-panel);
-    border: 1px solid var(--db-border);
-    border-radius: 6px;
-    padding: var(--space-md);
-    margin-bottom: var(--space-lg);
+  /* ── Feed ── */
+
+  .db-feed {
+    background: #1a2540;
+    border: 1px solid #2a3a5c;
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
   }
 
   .feed-line {
     font-size: var(--text-sm);
-    color: var(--db-text);
-    padding: 4px 0;
-    line-height: 1.5;
+    color: #8a9bb5;
+    line-height: 1.55;
+    margin-bottom: 6px;
   }
 
-  .feed-name { font-weight: 600; color: var(--db-cyan); }
-  .feed-more { font-size: var(--text-sm); color: var(--db-link); }
+  .feed-who { color: #5a9fd4; }
+  .feed-more { font-size: var(--text-sm); }
 
-  /* Guru column */
-  .guru-col {
-    background: var(--db-panel);
-    border: 1px solid var(--db-border);
+  /* ── Guru panel ── */
+
+  .db-guru {
+    background: #1a2540;
+    border: 1px solid #2a3a5c;
     border-radius: 8px;
-    padding: var(--space-md);
+    padding: 24px;
     display: flex;
     flex-direction: column;
-    max-height: calc(100vh - 120px);
     position: sticky;
     top: 80px;
+    max-height: calc(100vh - 120px);
   }
 
-  .guru-title {
+  .guru-head {
     font-size: var(--text-base);
-    color: var(--db-cyan);
-    margin: 0 0 var(--space-sm);
+    color: #dce4ed;
+    margin: 0 0 12px;
     border-bottom: none;
     padding-bottom: 0;
   }
 
-  .guru-sub { font-weight: 400; font-size: var(--text-xs); color: var(--db-muted); }
+  .guru-role {
+    font-weight: 400;
+    font-size: 12px;
+    color: #5e6f8a;
+  }
 
   .guru-filters {
     display: flex;
-    gap: 4px;
-    margin-bottom: var(--space-sm);
     flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 16px;
   }
 
-  .guru-filter {
+  .guru-chip {
     font-family: var(--font-sans);
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 600;
-    color: var(--fc);
-    background: color-mix(in srgb, var(--fc) 12%, transparent);
-    padding: 3px 6px;
+    color: var(--gc);
+    background: color-mix(in srgb, var(--gc) 10%, transparent);
+    padding: 3px 8px;
     border-radius: 3px;
-    cursor: default;
   }
 
   .guru-chat {
     flex: 1;
     overflow-y: auto;
-    margin-bottom: var(--space-sm);
+    margin-bottom: 12px;
   }
 
   .guru-msg {
-    font-size: var(--text-sm);
-    padding: 8px 10px;
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 10px 12px;
     border-radius: 6px;
-    margin-bottom: 6px;
-    line-height: 1.45;
+    margin-bottom: 8px;
   }
 
-  .guru-msg.visitor {
-    background: rgba(100, 181, 246, 0.1);
-    color: var(--db-text);
+  .guru-msg.is-visitor {
+    background: rgba(90, 159, 212, 0.08);
+    color: #b0bdd0;
   }
 
-  .guru-msg.guru {
-    background: rgba(78, 205, 196, 0.1);
-    color: var(--db-cyan);
+  .guru-msg.is-guru {
+    background: rgba(61, 168, 158, 0.08);
+    color: #8abfb9;
   }
 
-  .guru-placeholder {
-    font-size: var(--text-xs);
-    color: var(--db-muted);
+  .guru-note {
+    font-size: 12px;
+    color: #5e6f8a;
     font-style: italic;
-    border-top: 1px dashed var(--db-border);
-    padding-top: var(--space-sm);
-    margin-top: var(--space-sm);
+    border-top: 1px solid #2a3a5c;
+    padding-top: 12px;
+    margin-top: 8px;
+  }
+
+  .guru-input-wrap {
+    border-top: 1px solid #2a3a5c;
+    padding-top: 12px;
   }
 
   .guru-input {
-    border-top: 1px solid var(--db-border);
-    padding-top: var(--space-sm);
-  }
-
-  .guru-input input {
     width: 100%;
     font-family: inherit;
-    font-size: var(--text-sm);
-    padding: 8px 12px;
-    border: 1px solid var(--db-border);
-    border-radius: 4px;
-    background: var(--db-bg);
-    color: var(--db-text);
+    font-size: 13px;
+    padding: 10px 14px;
+    border: 1px solid #2a3a5c;
+    border-radius: 5px;
+    background: #0f1a30;
+    color: #b0bdd0;
   }
 
-  .guru-input input::placeholder { color: var(--db-muted); }
+  .guru-input::placeholder { color: #4a5a75; }
 
-  /* Three doors */
-  .doors {
+  /* ── Three doors ── */
+
+  .db-doors {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-sm);
-    padding: var(--space-md);
-    position: relative;
-    z-index: 1;
+    gap: 12px;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 0 32px var(--space-xl);
   }
 
-  .door {
+  .door-btn {
     display: block;
     text-align: center;
     font-family: var(--font-sans);
-    font-size: var(--text-sm);
+    font-size: 14px;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    padding: var(--space-sm) var(--space-md);
-    border: 1px solid var(--db-cyan);
-    border-radius: 4px;
-    color: var(--db-cyan);
+    letter-spacing: 0.03em;
+    padding: 14px 20px;
+    border: 1px solid #3a4d70;
+    border-radius: 6px;
+    color: #b0bdd0;
     text-decoration: none;
-    transition: background 0.15s, color 0.15s;
+    transition: background 0.15s, border-color 0.15s;
   }
 
-  .door:hover { background: rgba(78, 205, 196, 0.1); color: #e8eef4; }
+  .door-btn:hover {
+    background: #1a2540;
+    border-color: #5a9fd4;
+    color: #dce4ed;
+  }
 
   .door-accent {
-    border-color: var(--db-amber);
-    color: var(--db-amber);
+    border-color: #c9a84c;
+    color: #c9a84c;
   }
 
-  .door-accent:hover { background: rgba(255, 167, 38, 0.1); color: #e8eef4; }
+  .door-accent:hover {
+    background: rgba(201, 168, 76, 0.08);
+    border-color: #e0be5a;
+    color: #e0be5a;
+  }
 
-  /* Mobile */
+  /* ── Mobile: single column, Guru first ── */
+
   @media (max-width: 768px) {
-    .matrix-canvas { display: none; }
-
-    .dashboard {
+    .db-layout {
       grid-template-columns: 1fr;
+      padding: 0 16px var(--space-lg);
+      gap: 20px;
     }
 
-    .guru-col {
+    .db-guru {
       position: static;
       max-height: none;
       order: -1;
     }
 
-    .room-cards-scroll { flex-direction: column; }
-    .room-card { flex: none; width: 100%; }
+    .db-cards {
+      grid-template-columns: 1fr;
+    }
 
-    .doors { grid-template-columns: 1fr; }
+    .db-doors {
+      grid-template-columns: 1fr;
+      padding: 0 16px var(--space-lg);
+    }
+
+    .db-hero { padding: var(--space-lg) 16px var(--space-md); }
   }
 </style>

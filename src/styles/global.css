@@ -97,20 +97,20 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Dark dashboard mode (homepage only) */
+/* Dark dashboard mode (homepage only) — raised blue, not near-black */
 body.dark-dashboard {
-  --color-bg: #0a0f1e;
-  --color-bg-alt: #111827;
-  --color-surface: #111827;
-  --color-text: #c8d6e5;
-  --color-text-muted: #6b7b8d;
-  --color-text-faint: #4a5568;
-  --color-border: #1e2a4a;
-  --color-border-light: #1e2a4a;
-  --color-accent: #4ecdc4;
-  --color-accent-hover: #64e8de;
-  --color-link: #64b5f6;
-  --color-link-hover: #90caf9;
+  --color-bg: #0f1a30;
+  --color-bg-alt: #1a2540;
+  --color-surface: #1a2540;
+  --color-text: #dce4ed;
+  --color-text-muted: #8a9bb5;
+  --color-text-faint: #5e6f8a;
+  --color-border: #2a3a5c;
+  --color-border-light: #2a3a5c;
+  --color-accent: #3da89e;
+  --color-accent-hover: #4ecdc4;
+  --color-link: #5a9fd4;
+  --color-link-hover: #7ab8e2;
 }
 
 /* --- Layout --- */
