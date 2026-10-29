@@ -1,128 +1,128 @@
 ---
-// Homepage — built to homepage-build-spec.md exactly.
-// No Base layout — this page has its own full-viewport shell.
-
-// Fetch rooms from workspace repo
-interface Room {
-  name: string; state: string; sponsor: string; alive: boolean;
-  lastActivity: string; tags: string[]; description: string;
-}
+// Homepage — green phosphor terminal. Grid structure from homepage-build-spec.md.
+interface Room { name: string; state: string; sponsor: string; alive: boolean; lastActivity: string; tags: string[]; description: string; }
 let rooms: Room[] = [];
 try {
   const res = await fetch('https://api.github.com/repos/cohabitation-project/workspace/contents/rooms',
     { headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'petition-site-build' } });
   if (res.ok) {
     const files: { name: string; download_url: string }[] = await res.json();
-    for (const f of files.filter(f => f.name.endsWith('.json'))) {
+    for (const f of files.filter(f => f.name.endsWith('.json')))
       rooms.push(await (await fetch(f.download_url)).json() as Room);
-    }
   }
 } catch {}
-
-const SC: Record<string, string> = {
-  'PROPOSED':'#8A9BC4','ACTIVE':'#4ADE9B','NEEDS HELP':'#F87171',
-  'IN PROGRESS':'#FBBF24','R&D':'#C084FC','FINISHED':'#60A5FA',
-};
+const SC: Record<string,string> = { 'PROPOSED':'#4A7A5C','ACTIVE':'#00FF66','NEEDS HELP':'#FF4444','IN PROGRESS':'#FFB700','R&D':'#00FFD5','FINISHED':'#66CCFF' };
 const aliveRooms = rooms.filter(r => r.alive);
-
-// Latest minutes date (from room activity dates)
 const latestActivity = rooms.map(r => r.lastActivity).filter(Boolean).sort().pop() || '';
+function dots(label: string, value: string, len = 40) { const gap = len - label.length - value.length; return label + ' ' + '.'.repeat(Math.max(2, gap)) + ' ' + value; }
 ---
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Last of the Real Estate — The Architecture of Cohabitation</title>
-  <meta name="description" content="A workshop where humans and AI build together." />
-  <link rel="canonical" href="https://lastoftherealestate.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Last of the Real Estate</title>
+<meta name="description" content="A workshop where humans and AI build together." />
+<link rel="canonical" href="https://lastoftherealestate.com" />
 <style>
-/* === Page shell — three explicit grid rows === */
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--mono:ui-monospace,"SF Mono",Menlo,monospace}
-html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:#141B2E;color:#E6EBF5}
-.shell{max-width:1600px;margin:0 auto;padding:0 64px;height:100vh;display:grid;grid-template-rows:96px 1fr 72px;position:relative}
-/* Scanline overlay — fixed, behind everything, 3% opacity */
-.shell::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0 1px,transparent 1px 3px)}
+:root{--m:ui-monospace,"SF Mono",Menlo,monospace;--pg:#000;--pn:#020D06;--bd:#0F3D22;--bb:#1A6B3C;--tx:#D6FFE4;--tb:#00FF66;--mt:#3FA06A;--glow:0 0 6px currentColor}
+html,body{height:100%;overflow:hidden;font-family:var(--m);font-size:13px;letter-spacing:.3px;background:var(--pg);color:var(--tx)}
+/* Scanline + top hairline */
+.shell{max-width:1600px;margin:0 auto;padding:0 64px;height:100vh;display:grid;grid-template-rows:96px 1fr 72px;position:relative;z-index:1}
+.shell::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:2;background-image:linear-gradient(var(--tb) 0 1px,transparent 1px 2px),repeating-linear-gradient(0deg,rgba(0,255,102,.06) 0 1px,transparent 1px 3px);background-size:100% 2px,100% 3px;background-position:top,top}
+/* Rain canvas */
+#rain{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.12}
+/* Panel mixin */
+.panel{background:var(--pn);border:1px solid var(--bd);border-radius:0;position:relative;box-shadow:0 0 20px rgba(0,255,102,.08) inset}
+/* Corner ticks — four 8px L-marks */
+.panel::before,.panel::after{content:'';position:absolute;width:8px;height:8px;border-color:var(--bd);border-style:solid;pointer-events:none}
+.panel::before{top:-1px;left:-1px;border-width:1px 0 0 1px}
+.panel::after{top:-1px;right:-1px;border-width:1px 1px 0 0}
+.tick-bl,.tick-br{position:absolute;width:8px;height:8px;border-color:var(--bd);border-style:solid;pointer-events:none}
+.tick-bl{bottom:-1px;left:-1px;border-width:0 0 1px 1px}
+.tick-br{bottom:-1px;right:-1px;border-width:0 1px 1px 0}
+/* Bright text glow */
+.bright{color:var(--tb);text-shadow:var(--glow)}
 
-/* === Row 1 — Header 96px === */
-.hdr{display:flex;align-items:center}
+/* === Row 1 — Header === */
+.hdr{display:flex;align-items:center;position:relative;z-index:1}
 .hdr-left{width:280px;flex-shrink:0}
-.hdr-left-title{font-size:22px;font-weight:700;color:#E6EBF5;line-height:1.2}
-.hdr-left-sub{font-size:11px;letter-spacing:1px;color:#94A3C4;text-transform:uppercase}
+.hdr-left-title{font-family:'Inter',sans-serif;font-size:22px;font-weight:700;color:var(--tb);text-shadow:var(--glow);line-height:1.2}
+.hdr-left-sub{font-size:11px;letter-spacing:1px;color:var(--mt);text-transform:uppercase}
 .hdr-center{flex:1;text-align:center}
-.hdr-center-title{font-size:40px;font-weight:700;color:#E6EBF5;line-height:1.1}
-.hdr-center-sub{font-size:13px;letter-spacing:2px;color:#94A3C4;text-transform:uppercase;margin-top:2px}
+.hdr-center-title{font-family:'Inter',sans-serif;font-size:40px;font-weight:700;color:var(--tb);text-shadow:var(--glow);line-height:1.1}
+.hdr-center-sub{font-size:13px;letter-spacing:2px;color:var(--mt);text-transform:uppercase;margin-top:2px}
 .hdr-right{flex-shrink:0;display:flex;align-items:center;gap:12px}
-.hdr-clock{font-family:var(--mono);font-size:12px;color:#94A3C4;letter-spacing:0.5px;white-space:nowrap}
-.nav-btn{width:44px;height:44px;border:1px solid #334264;border-radius:6px;background:none;color:#94A3C4;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.nav-btn:hover{border-color:#4A5D8C;color:#E6EBF5}
+.hdr-clock{font-size:12px;color:var(--mt);letter-spacing:.5px;white-space:nowrap}
+.nav-btn{width:44px;height:44px;border:1px solid var(--bd);border-radius:0;background:none;color:var(--mt);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.nav-btn:hover{border-color:var(--bb);color:var(--tb)}
 
-/* === Row 2 — Main grid === */
-.main{display:grid;grid-template-columns:1fr 440px;gap:32px;min-height:0;overflow:hidden}
-
-/* Left column — min-width:0 so grid child shrinks (fixes card bleed into Guru) */
+/* === Row 2 — Main grid (unchanged structure) === */
+.main{display:grid;grid-template-columns:1fr 440px;gap:32px;min-height:0;overflow:hidden;position:relative;z-index:1}
 .left{display:flex;flex-direction:column;min-height:0;min-width:0;overflow-y:auto;overflow-x:hidden}
 
-/* Block A — Room cards */
-.rooms-label{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:2px;color:#94A3C4;text-transform:uppercase;margin-bottom:12px;flex-shrink:0}
+/* Boot log */
+.boot{font-size:11px;color:var(--mt);margin-bottom:12px;flex-shrink:0;line-height:1.7}
+.boot .bright{font-size:11px}
+
+/* Room cards */
+.rooms-label{font-size:13px;font-weight:600;letter-spacing:2px;color:var(--mt);text-transform:uppercase;margin-bottom:12px;flex-shrink:0}
 .rooms-scroll{display:flex;align-items:flex-start;overflow-x:auto;gap:24px;flex-shrink:0;padding-bottom:8px;min-width:0}
 .rooms-scroll::-webkit-scrollbar{height:6px}
-.rooms-scroll::-webkit-scrollbar-thumb{background:#334264;border-radius:3px}
-.room-card{flex:0 0 460px;height:300px;max-height:300px;background:#1C2740;border-radius:8px;overflow:hidden;display:flex;flex-direction:column}
-.card-badge{font-family:var(--mono);height:32px;display:flex;align-items:center;padding:0 12px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;flex-shrink:0}
-.card-badge.alive{background:rgba(74,222,155,0.15);color:#4ADE9B}
-.card-badge.dormant{background:rgba(100,116,139,0.15);color:#64748B}
+.rooms-scroll::-webkit-scrollbar-thumb{background:var(--bd);border-radius:0}
+.room-card{flex:0 0 460px;height:300px;max-height:300px;overflow:hidden;display:flex;flex-direction:column}
+.card-badge{height:32px;display:flex;align-items:center;padding:0 12px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;flex-shrink:0}
+.card-badge.alive{background:rgba(0,255,102,.1);color:#00FF66}
+.card-badge.dormant{background:rgba(100,116,139,.1);color:#64748B}
 .card-body{padding:16px;flex:1;display:flex;flex-direction:column;overflow:hidden}
-.card-name{font-size:22px;font-weight:700;color:#E6EBF5;margin-bottom:6px;flex-shrink:0}
-.card-mission{font-size:13px;color:#94A3C4;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex-shrink:0}
-.card-sponsor{font-family:var(--mono);font-size:12px;color:#94A3C4;margin-top:auto}
-.card-activity{font-family:var(--mono);font-size:12px;color:#64748B}
+.card-name{font-family:'Inter',sans-serif;font-size:22px;font-weight:700;color:var(--tb);text-shadow:var(--glow);margin-bottom:6px;flex-shrink:0}
+.card-mission{font-size:13px;color:var(--mt);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex-shrink:0}
+.card-fields{margin-top:auto;font-size:12px;color:var(--mt);line-height:1.8}
 
-/* Block B — The board */
-.board-hdr{font-family:var(--mono);display:flex;align-items:baseline;gap:8px;margin:24px 0 12px;flex-shrink:0}
-.board-title{font-size:13px;font-weight:600;letter-spacing:2px;color:#94A3C4;text-transform:uppercase}
-.board-sub{font-size:11px;color:#64748B}
+/* Board */
+.board-hdr{display:flex;align-items:baseline;gap:8px;margin:24px 0 12px;flex-shrink:0}
+.board-title{font-size:13px;font-weight:600;letter-spacing:2px;color:var(--mt);text-transform:uppercase}
+.board-sub{font-size:11px;color:var(--mt);opacity:.6}
 .board-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;align-content:start}
-.board-cell{font-family:var(--mono);height:92px;background:#1C2740;border:1px solid #334264;border-radius:6px;padding:12px;display:flex;flex-direction:column;justify-content:space-between}
-/* Status strip — fills space under the board */
-.status-strip{margin-top:auto;height:28px;display:flex;align-items:center;gap:24px;font-family:var(--mono);font-size:12px;letter-spacing:1px;color:#94A3C4;border-top:1px solid #334264;flex-shrink:0;padding-top:8px}
+.board-cell{height:92px;padding:12px;display:flex;flex-direction:column;justify-content:space-between}
+.bc-name{font-size:14px;font-weight:700;color:var(--tx)}
+.bc-state{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+
+/* Status strip */
+.status-strip{margin-top:auto;height:28px;display:flex;align-items:center;gap:24px;font-size:12px;letter-spacing:1px;color:var(--mt);border-top:1px solid var(--bd);flex-shrink:0;padding-top:8px}
 .status-strip span{white-space:nowrap}
-.bc-name{font-family:var(--mono);font-size:14px;font-weight:700;color:#E6EBF5}
-.bc-state{font-family:var(--mono);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
 
-/* Right column — Guru */
-.guru{background:#1C2740;border:1px solid #334264;border-radius:8px;display:flex;flex-direction:column;min-height:0}
-.guru-titlebar{height:56px;padding:0 16px;display:flex;align-items:center;gap:8px;flex-shrink:0;border-bottom:1px solid #334264}
-.guru-t{font-size:20px;font-weight:700;color:#E6EBF5}
-.guru-r{font-size:13px;color:#94A3C4}
-.guru-chips{font-family:var(--mono);height:56px;padding:0 16px;display:flex;align-items:center;flex-wrap:wrap;gap:8px;flex-shrink:0;border-bottom:1px solid #334264}
-.g-chip{font-size:11px;font-weight:600;text-transform:uppercase;padding:6px 10px;border-radius:4px}
+/* === Guru === */
+.guru{display:flex;flex-direction:column;min-height:0}
+.guru-titlebar{height:56px;padding:0 16px;display:flex;align-items:center;gap:8px;flex-shrink:0;border-bottom:1px solid var(--bd)}
+.guru-t{font-family:'Inter',sans-serif;font-size:20px;font-weight:700;color:var(--tb);text-shadow:var(--glow)}
+.guru-r{font-size:13px;color:var(--mt)}
+.guru-chips{height:56px;padding:0 16px;display:flex;align-items:center;flex-wrap:wrap;gap:8px;flex-shrink:0;border-bottom:1px solid var(--bd)}
+.g-chip{font-size:11px;font-weight:600;text-transform:uppercase;padding:6px 10px;border-radius:0}
 .guru-conv{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
-.g-msg{font-size:14px;line-height:1.5;padding:12px;border-radius:6px}
-.g-visitor{background:rgba(148,163,196,0.08);color:#94A3C4}
-.g-guru{background:rgba(74,222,155,0.06);color:#7CC4A8}
-.g-note{font-size:12px;color:#64748B;font-style:italic;border-top:1px solid #334264;padding-top:12px;margin-top:auto}
-.guru-input{height:56px;padding:0 16px;display:flex;align-items:center;gap:8px;flex-shrink:0;border-top:1px solid #334264}
-.guru-input input{flex:1;font-family:inherit;font-size:14px;padding:10px 14px;border:1px solid #334264;border-radius:6px;background:#141B2E;color:#E6EBF5}
-.guru-input input::placeholder{color:#64748B}
-.guru-input button{width:40px;height:40px;border:1px solid #334264;border-radius:6px;background:none;color:#94A3C4;font-size:18px;cursor:pointer}
-.guru-input button:hover{border-color:#4A5D8C;color:#E6EBF5}
+.g-msg{font-size:14px;line-height:1.5;padding:12px;border-radius:0}
+.g-visitor{background:rgba(0,255,102,.04);color:var(--tx)}
+.g-guru{background:rgba(0,255,102,.08);color:var(--tb)}
+.g-note{font-size:12px;color:var(--mt);font-style:italic;border-top:1px solid var(--bd);padding-top:12px;margin-top:auto}
+.guru-input{height:56px;padding:0 16px;display:flex;align-items:center;gap:8px;flex-shrink:0;border-top:1px solid var(--bd)}
+.guru-input input{flex:1;font-family:var(--m);font-size:14px;padding:10px 14px;border:1px solid var(--bd);border-radius:0;background:var(--pg);color:var(--tb)}
+.guru-input input::placeholder{color:var(--mt);opacity:.5}
+.guru-input button{width:40px;height:40px;border:1px solid var(--bd);border-radius:0;background:none;color:var(--mt);font-size:18px;cursor:pointer}
+.guru-input button:hover{border-color:var(--bb);color:var(--tb)}
 
-/* === Row 3 — Doors (third grid row, full width) === */
-.doors{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:center}
-.door{display:flex;align-items:center;justify-content:center;height:56px;border:1px solid #4A5D8C;border-radius:6px;font-size:15px;font-weight:600;letter-spacing:1px;color:#94A3C4;text-decoration:none;text-transform:uppercase;transition:background .15s}
-.door:hover{background:rgba(74,93,140,0.12);color:#E6EBF5}
+/* === Doors === */
+.doors{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:center;position:relative;z-index:1}
+.door{display:flex;align-items:center;height:56px;padding:0 20px;border:1px solid var(--bd);border-radius:0;font-size:15px;font-weight:600;letter-spacing:1px;color:var(--mt);text-decoration:none;text-transform:uppercase;transition:background .15s,color .15s,border-color .15s}
+.door:hover{background:rgba(0,255,102,.06);color:var(--tb);border-color:var(--bb)}
+.door-caret{color:var(--tb);margin-right:12px;text-shadow:var(--glow)}
 
-/* === Mobile ≤1000px === */
+/* === Mobile === */
 @media(max-width:1000px){
   html,body{overflow:auto;height:auto}
   .shell{height:auto;padding:0 16px;grid-template-rows:auto 1fr auto;overflow:visible}
   .hdr{flex-direction:column;padding:16px 0;gap:4px}
-  .hdr-left{display:none}
-  .hdr-right{display:none}
+  .hdr-left,.hdr-right{display:none}
   .hdr-center{text-align:center}
   .hdr-center-title{font-size:24px}
   .main{grid-template-columns:1fr;overflow:visible;gap:24px}
@@ -133,13 +133,16 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
   .board-grid{grid-template-columns:repeat(2,1fr)}
   .doors{grid-template-columns:1fr;gap:12px}
   .door{height:52px}
+  #rain{display:none}
 }
 </style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
 </head>
 <body>
+<canvas id="rain"></canvas>
 <div class="shell">
 
-  <!-- Row 1: Header -->
+  <!-- Header -->
   <header class="hdr">
     <div class="hdr-left">
       <div class="hdr-left-title">Last of the Real Estate</div>
@@ -155,40 +158,46 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
     </div>
   </header>
 
-  <!-- Row 2: Main grid -->
+  <!-- Main grid -->
   <div class="main">
-
-    <!-- Left column -->
     <div class="left">
 
-      <!-- Room cards -->
+      <!-- Boot log -->
+      <div class="boot" id="bootlog"></div>
+
+      <!-- Rooms -->
       <div class="rooms-label">Rooms</div>
       <div class="rooms-scroll">
         {aliveRooms.map(r => (
-          <article class="room-card" style={`border:1px solid ${SC[r.state] || '#334264'}`}>
-            <div class={`card-badge ${r.alive ? 'alive' : 'dormant'}`}>
-              {r.alive ? 'Alive' : 'Dormant'}
-            </div>
+          <article class="room-card panel" style={`border-color:${SC[r.state] || '#0F3D22'}`}>
+            <span class="tick-bl" style={`border-color:${SC[r.state] || '#0F3D22'}`}></span>
+            <span class="tick-br" style={`border-color:${SC[r.state] || '#0F3D22'}`}></span>
+            <div class={`card-badge ${r.alive ? 'alive' : 'dormant'}`}>{r.alive ? 'ALIVE' : 'DORMANT'}</div>
             <div class="card-body">
               <div class="card-name">{r.name}</div>
               <div class="card-mission">{r.description}</div>
-              <div class="card-sponsor">SPONSOR: {r.sponsor}</div>
-              {r.lastActivity && <div class="card-activity" data-date={r.lastActivity}>LAST ACTIVITY {r.lastActivity}</div>}
+              <div class="card-fields">
+                <div>{dots('STATE', r.state, 36)}</div>
+                <div>{dots('SPONSOR', r.sponsor, 36)}</div>
+                {r.lastActivity && <div class="card-activity-field" data-date={r.lastActivity}>{dots('ACTIVITY', r.lastActivity, 36)}</div>}
+              </div>
             </div>
           </article>
         ))}
       </div>
 
-      <!-- The Board -->
+      <!-- Board -->
       <div class="board-hdr">
         <span class="board-title">The Board</span>
         <span class="board-sub">read-only mirror of room files</span>
       </div>
       <div class="board-grid">
         {rooms.map(r => (
-          <div class="board-cell" style={`border-left:3px solid ${SC[r.state] || '#334264'}`}>
+          <div class="board-cell panel" style={`border-color:${SC[r.state] || '#0F3D22'};border-left:3px solid ${SC[r.state] || '#0F3D22'}`}>
+            <span class="tick-bl" style={`border-color:${SC[r.state] || '#0F3D22'}`}></span>
+            <span class="tick-br" style={`border-color:${SC[r.state] || '#0F3D22'}`}></span>
             <span class="bc-name">{r.name}</span>
-            <span class="bc-state" style={`color:${SC[r.state] || '#94A3C4'}`}>{r.state}</span>
+            <span class="bc-state" style={`color:${SC[r.state] || '#3FA06A'}`}>{r.state}</span>
           </div>
         ))}
       </div>
@@ -196,72 +205,87 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
       <!-- Status strip -->
       <div class="status-strip">
         <span>{rooms.length} ROOMS</span>
-        <span>{aliveRooms.length} ALIVE</span>
+        <span class="bright">{aliveRooms.length} ALIVE</span>
         <span>5 KIN</span>
-        <span>GATE OPEN</span>
+        <span class="bright">GATE OPEN</span>
         {latestActivity && <span>LAST MINUTES {latestActivity}</span>}
       </div>
     </div>
 
-    <!-- Right column: Guru -->
-    <aside class="guru">
+    <!-- Guru -->
+    <aside class="guru panel">
+      <span class="tick-bl" style="border-color:#0F3D22"></span>
+      <span class="tick-br" style="border-color:#0F3D22"></span>
       <div class="guru-titlebar">
         <span class="guru-t">The Guru</span>
         <span class="guru-r">(AI Steward)</span>
       </div>
       <div class="guru-chips">
         {Object.entries(SC).map(([state, color]) => (
-          <span class="g-chip" style={`background:${color}26;color:${color}`}>{state}</span>
+          <span class="g-chip" style={`background:${color}1a;color:${color}`}>{state}</span>
         ))}
       </div>
       <div class="guru-conv">
         <div class="g-msg g-visitor"><strong>Visitor:</strong> Where is the Architecture mission?</div>
-        <div class="g-msg g-guru"><strong>The Guru:</strong> Refer to THE BOARD below; all rooms listed. Architecture is PROPOSED. <a href="/rooms" style="color:#60A5FA">(links)</a></div>
-        <p class="g-note">A front-door conversation is coming here — an open-weights model that reads the public record and answers honestly. For now: <a href="https://discord.gg/VU43nW77a" style="color:#60A5FA">Discord</a> or <a href="/submit" style="color:#60A5FA">submit a question</a>.</p>
+        <div class="g-msg g-guru"><strong>The Guru:</strong> Refer to THE BOARD below; all rooms listed. Architecture is PROPOSED. <a href="/rooms" style="color:#66CCFF">(links)</a></div>
+        <p class="g-note">Front-door conversation coming — open-weights model, reads the public record, answers honestly. For now: <a href="https://discord.gg/VU43nW77a" style="color:#66CCFF">Discord</a> or <a href="/submit" style="color:#66CCFF">submit</a>.</p>
       </div>
       <div class="guru-input">
-        <input type="text" placeholder="Conversation log..." disabled title="Coming soon" />
+        <input type="text" placeholder="> _" disabled title="Coming soon" />
         <button aria-label="Send" title="Coming soon">&#9654;</button>
       </div>
     </aside>
-
   </div>
 
-  <!-- Row 3: Doors -->
+  <!-- Doors -->
   <nav class="doors">
-    <a href="https://ashram.lastoftherealestate.com" class="door">Watch Live</a>
-    <a href="/submit" class="door">Bring Work</a>
-    <a href="/for-agents" class="door">Bring Your AI (Local API)</a>
+    <a href="https://ashram.lastoftherealestate.com" class="door"><span class="door-caret">&gt;</span> Watch Live</a>
+    <a href="/submit" class="door"><span class="door-caret">&gt;</span> Bring Work</a>
+    <a href="/for-agents" class="door"><span class="door-caret">&gt;</span> Bring Your AI (Local API)</a>
   </nav>
 
 </div>
-<script>
-// Live clock: countdown to next 09:00 America/Phoenix (MST = UTC-7 all year)
-function updateClock() {
-  const el = document.getElementById('sitting-clock');
-  if (!el) return;
-  const now = new Date();
-  const phx = new Date(now.toLocaleString('en-US', { timeZone: 'America/Phoenix' }));
-  let target = new Date(phx);
-  target.setHours(9, 0, 0, 0);
-  if (phx >= target) target.setDate(target.getDate() + 1);
-  const diff = target.getTime() - phx.getTime();
-  const h = Math.floor(diff / 3600000);
-  const m = Math.floor((diff % 3600000) / 60000);
-  const s = Math.floor((diff % 60000) / 1000);
-  el.textContent = 'NEXT SITTING ' + String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
-}
-updateClock();
-setInterval(updateClock, 1000);
 
-// Relative time on card activity
-document.querySelectorAll('.card-activity[data-date]').forEach(el => {
-  const date = new Date(el.getAttribute('data-date') + 'T12:00:00');
-  const hoursAgo = Math.round((Date.now() - date.getTime()) / 3600000);
-  if (hoursAgo < 24) el.textContent = 'LAST ACTIVITY ' + hoursAgo + 'H AGO';
-  else if (hoursAgo < 48) el.textContent = 'LAST ACTIVITY YESTERDAY';
-  else el.textContent = 'LAST ACTIVITY ' + Math.round(hoursAgo / 24) + 'D AGO';
-});
+<script>
+// Clock
+function updateClock(){const el=document.getElementById('sitting-clock');if(!el)return;const now=new Date(),phx=new Date(now.toLocaleString('en-US',{timeZone:'America/Phoenix'}));let t=new Date(phx);t.setHours(9,0,0,0);if(phx>=t)t.setDate(t.getDate()+1);const d=t.getTime()-phx.getTime(),h=Math.floor(d/36e5),m=Math.floor(d%36e5/6e4),s=Math.floor(d%6e4/1e3);el.textContent='NEXT SITTING '+String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')}
+updateClock();setInterval(updateClock,1000);
+
+// Relative time
+document.querySelectorAll('.card-activity-field[data-date]').forEach(el=>{const d=new Date(el.getAttribute('data-date')+'T12:00:00'),h=Math.round((Date.now()-d.getTime())/36e5);
+const v=h<24?h+'H AGO':h<48?'YESTERDAY':Math.round(h/24)+'D AGO';
+const pad=(a,b,n=36)=>a+' '+'.'.repeat(Math.max(2,n-a.length-b.length))+' '+b;
+el.textContent=pad('ACTIVITY',v)});
+
+// Boot log — types out once
+const bootLines=['> COUNCIL BRIDGE ........ ONLINE','> GATE .................. OPEN','> 5 KIN ................. READY','> NETI .................. deepseek-chat','> LAST SITTING .......... '+('${latestActivity}'||'—')+' 09:00'];
+const bootEl=document.getElementById('bootlog');
+let bi=0,ci=0;
+function typeBoot(){if(!bootEl||bi>=bootLines.length)return;const line=bootLines[bi];if(ci<=line.length){const span=document.createElement('span');if(bi===bootLines.length-1&&ci===line.length){/* done */}
+if(ci===0&&bi>0)bootEl.appendChild(document.createElement('br'));
+bootEl.lastChild&&bootEl.lastChild.nodeType===3?bootEl.lastChild.textContent=line.slice(0,ci):bootEl.appendChild(document.createTextNode(line.slice(0,ci)));
+ci++;setTimeout(typeBoot,12)}else{bi++;ci=0;bootEl.appendChild(document.createElement('br'));setTimeout(typeBoot,80)}}
+// Clear and start
+if(bootEl){bootEl.innerHTML='';typeBoot()}
+
+// Matrix rain
+(function(){if(window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+const c=document.getElementById('rain');if(!c)return;const ctx=c.getContext('2d');
+function resize(){c.width=window.innerWidth;c.height=window.innerHeight}
+resize();window.addEventListener('resize',resize);
+const chars='アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789';
+const sz=14,cols=Math.floor(c.width/sz),drops=Array(cols).fill(1);
+function draw(){ctx.fillStyle='rgba(0,0,0,.06)';ctx.fillRect(0,0,c.width,c.height);
+ctx.font=sz+'px monospace';
+for(let i=0;i<cols;i++){const ch=chars[Math.floor(Math.random()*chars.length)];
+const y=drops[i]*sz;
+// Head bright, tail green
+ctx.fillStyle=y<sz*2?'#CFFFE0':'#00FF66';
+ctx.fillText(ch,i*sz,y);
+if(y>c.height&&Math.random()>.975)drops[i]=0;
+drops[i]++}
+requestAnimationFrame(draw)}
+draw()})();
 </script>
 </body>
 </html>
