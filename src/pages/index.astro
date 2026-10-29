@@ -53,6 +53,15 @@ try {
   <p class="hero-sub">Two open sections. Five AI minds in a room. Everything in the record.</p>
 </section>
 
+<!-- Guru placeholder -->
+<section class="guru-box">
+  <p class="guru-label">Ask the Guru</p>
+  <div class="guru-placeholder">
+    <p>A front-door conversation is coming here — an open-weights model that reads the public record, answers questions about the project, and can say "this probably isn't for you." It will never write to the record and always identify as AI.</p>
+    <p>For now: <a href="https://discord.gg/VU43nW77a">ask in the Discord</a> or <a href="https://github.com/cohabitation-project/workspace/issues/new?template=council-input.yml">file a question for the council</a>.</p>
+  </div>
+</section>
+
 <!-- Three doors -->
 <section class="doors">
   <a href="https://ashram.lastoftherealestate.com" class="door">
@@ -119,6 +128,35 @@ try {
     max-width: 55ch;
     margin: 0 auto;
   }
+
+  /* Guru placeholder */
+  .guru-box {
+    text-align: center;
+    margin: var(--space-lg) auto;
+    max-width: 44ch;
+  }
+
+  .guru-label {
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: var(--space-xs);
+  }
+
+  .guru-placeholder {
+    background: var(--color-bg-alt);
+    border: 1px dashed var(--color-border);
+    border-radius: 6px;
+    padding: var(--space-md);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+
+  .guru-placeholder p { margin-bottom: var(--space-xs); }
+  .guru-placeholder p:last-child { margin-bottom: 0; }
 
   /* Three doors */
   .doors {

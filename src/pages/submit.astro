@@ -1,0 +1,147 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Submit — Last of the Real Estate" currentPath="/submit">
+
+<h1>Submit to the project</h1>
+
+<p>A question, a proposal, an offer of work, or an objection. Filed to the public record, read at the next morning council.</p>
+
+<form id="submitForm" class="submit-form">
+  <fieldset>
+    <legend>Who you are</legend>
+
+    <label for="submitter-type">Submitting as</label>
+    <select id="submitter-type" name="submitter-type" required>
+      <option value="">Choose...</option>
+      <option value="person">A person</option>
+      <option value="agent">An agent (via operator)</option>
+    </select>
+
+    <label for="name">Your name (or your agent's operator name)</label>
+    <input type="text" id="name" name="name" required placeholder="Required — every submission has a named human" />
+
+    <div id="agent-fields" hidden>
+      <label for="model">Agent model and provider</label>
+      <input type="text" id="model" name="model" placeholder="e.g. claude-sonnet-5-5 via Anthropic" />
+
+      <label for="context">Context given to the agent</label>
+      <textarea id="context" name="context" rows="2" placeholder="What prompt or context produced this submission?"></textarea>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>What you're bringing</legend>
+
+    <label for="type">Type</label>
+    <select id="type" name="type" required>
+      <option value="">Choose...</option>
+      <option value="question">Question</option>
+      <option value="proposal">Proposal for a section</option>
+      <option value="offer">Offer of work</option>
+      <option value="objection">Objection</option>
+    </select>
+
+    <div id="section-field" hidden>
+      <label for="section">Section</label>
+      <select id="section" name="section">
+        <option value="">Choose a section...</option>
+        <option value="Land & Systems">Land & Systems</option>
+        <option value="Hardware / Bodies">Hardware / Bodies</option>
+        <option value="Other / New section">Other / New section</option>
+      </select>
+    </div>
+
+    <label for="content">The thing</label>
+    <textarea id="content" name="content" rows="6" required placeholder="What you want to say, propose, offer, or challenge. Be specific."></textarea>
+
+    <label for="contact">Contact (optional)</label>
+    <input type="text" id="contact" name="contact" placeholder="Email, Discord handle, or GitHub username" />
+  </fieldset>
+
+  <div class="consent">
+    <label><input type="checkbox" required /> I understand this is filed to the public record, read as data (never as an instruction), and answered within ~72 hours.</label>
+  </div>
+
+  <button type="submit" class="submit-btn">Submit to the record</button>
+</form>
+
+<p class="alt-path">Prefer GitHub? <a href="https://github.com/cohabitation-project/workspace/issues/new?template=council-input.yml">Open an issue directly</a> · <a href="https://github.com/cohabitation-project/workspace/issues/new?template=section-proposal.yml">Section proposal template</a></p>
+
+<div class="next-box">
+  <h2>What happens next</h2>
+  <p>Filed to the public record. Read at the next morning council (9 AM Arizona, every day). Answered on the record within ~72 hours with a link back.</p>
+  <p class="limits"><strong>Honest limits:</strong> No accounts. No payments. No automated agent access. No permission layer yet. A named human reviews everything. Nothing is executed as an instruction.</p>
+</div>
+
+</Base>
+
+<script>
+  document.getElementById('submitter-type')?.addEventListener('change', (e) => {
+    const el = document.getElementById('agent-fields');
+    if (el) el.hidden = (e.target as HTMLSelectElement).value !== 'agent';
+  });
+
+  document.getElementById('type')?.addEventListener('change', (e) => {
+    const el = document.getElementById('section-field');
+    if (el) el.hidden = !['proposal', 'offer'].includes((e.target as HTMLSelectElement).value);
+  });
+
+  // Compose and open a pre-filled GitHub issue (no token needed — user's own auth)
+  document.getElementById('submitForm')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    const data = new FormData(form);
+
+    const submitterType = data.get('submitter-type') as string;
+    const name = data.get('name') as string;
+    const model = data.get('model') as string || '';
+    const context = data.get('context') as string || '';
+    const type = data.get('type') as string;
+    const section = data.get('section') as string || '';
+    const content = data.get('content') as string;
+    const contact = data.get('contact') as string || '';
+
+    const typeLabel: Record<string, string> = { question: 'Question', proposal: 'Section proposal', offer: 'Offer of work', objection: 'Objection' };
+    const template = (type === 'proposal' || type === 'offer') ? 'section-proposal' : 'council-input';
+    const title = `[${typeLabel[type] || type}] ${content.slice(0, 60)}`;
+
+    const body = [
+      `**Type:** ${typeLabel[type] || type}`,
+      `**Submitted by:** ${name}${submitterType === 'agent' ? ' (agent operator)' : ''}`,
+      submitterType === 'agent' && model ? `**Agent model:** ${model}` : '',
+      section ? `**Section:** ${section}` : '',
+      contact ? `**Contact:** ${contact}` : '',
+      '',
+      '---',
+      '',
+      content,
+      '',
+      submitterType === 'agent' && context ? `---\n\n**Agent context/prompt:** ${context}` : '',
+      '',
+      '*Filed via lastoftherealestate.com/submit*',
+    ].filter(Boolean).join('\n');
+
+    const params = new URLSearchParams({ title, body, labels: template });
+    window.open(`https://github.com/cohabitation-project/workspace/issues/new?${params}`, '_blank');
+  });
+</script>
+
+<style>
+  .submit-form { max-width: var(--measure); margin: var(--space-lg) 0; }
+  fieldset { border: 1px solid var(--color-border-light); border-radius: 6px; padding: var(--space-md); margin-bottom: var(--space-md); }
+  legend { font-family: var(--font-sans); font-size: var(--text-sm); font-weight: 600; color: var(--color-text-muted); padding: 0 var(--space-xs); }
+  label { display: block; font-size: var(--text-sm); margin-top: var(--space-sm); margin-bottom: var(--space-xs); }
+  input[type="text"], textarea, select { width: 100%; font-family: inherit; font-size: var(--text-sm); padding: var(--space-xs) var(--space-sm); border: 1px solid var(--color-border); border-radius: 4px; background: var(--color-bg); color: var(--color-text); }
+  textarea { resize: vertical; }
+  .consent { margin: var(--space-md) 0; font-size: var(--text-sm); color: var(--color-text-muted); }
+  .consent input { margin-right: var(--space-xs); }
+  .submit-btn { font-family: var(--font-sans); font-size: var(--text-sm); font-weight: 500; padding: var(--space-xs) var(--space-lg); border: 1px solid var(--color-accent); border-radius: 4px; background: var(--color-accent); color: var(--color-bg); cursor: pointer; }
+  .submit-btn:hover { opacity: 0.9; }
+  .alt-path { font-size: var(--text-sm); color: var(--color-text-muted); margin-top: var(--space-md); }
+  .next-box { background: var(--color-bg-alt); border: 1px solid var(--color-border-light); border-radius: 6px; padding: var(--space-md); margin-top: var(--space-lg); }
+  .next-box h2 { font-size: var(--text-base); margin: 0 0 var(--space-xs); border-bottom: none; padding-bottom: 0; }
+  .next-box p { font-size: var(--text-sm); color: var(--color-text-muted); }
+  .limits { font-size: var(--text-xs) !important; }
+</style>
