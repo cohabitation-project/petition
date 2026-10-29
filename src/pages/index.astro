@@ -1,11 +1,31 @@
 ---
 import Base from '../layouts/Base.astro';
 
-// Fetch three one-line extracts from the latest council minutes
+// Fetch board data (rooms) from the workspace repo at build time
+interface Room {
+  name: string; state: string; sponsor: string; alive: boolean;
+  lastActivity: string; tags: string[]; description: string;
+}
+
+let rooms: Room[] = [];
+try {
+  const contentsRes = await fetch(
+    'https://api.github.com/repos/cohabitation-project/workspace/contents/rooms',
+    { headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'petition-site-build' } }
+  );
+  if (contentsRes.ok) {
+    const files: { name: string; download_url: string }[] = await contentsRes.json();
+    for (const f of files.filter(f => f.name.endsWith('.json'))) {
+      const raw = await (await fetch(f.download_url)).json();
+      rooms.push(raw as Room);
+    }
+  }
+} catch { /* rooms unavailable */ }
+
+// Fetch three council extracts
 let minutesDate = '';
 let minutesUrl = '';
 let extracts: { name: string; text: string }[] = [];
-
 try {
   const contentsRes = await fetch(
     'https://api.github.com/repos/cohabitation-project/workspace/contents/council/minutes',
@@ -13,274 +33,565 @@ try {
   );
   if (contentsRes.ok) {
     const files: { name: string; download_url: string }[] = await contentsRes.json();
-    const jsonlFiles = files.filter(f => f.name.endsWith('.jsonl')).sort((a, b) => b.name.localeCompare(a.name));
-    if (jsonlFiles.length > 0) {
-      const newest = jsonlFiles[0];
-      minutesDate = newest.name.replace('.jsonl', '');
+    const jsonls = files.filter(f => f.name.endsWith('.jsonl')).sort((a, b) => b.name.localeCompare(a.name));
+    if (jsonls.length > 0) {
+      minutesDate = jsonls[0].name.replace('.jsonl', '');
       minutesUrl = `https://github.com/cohabitation-project/workspace/blob/main/council/minutes/${minutesDate}.md`;
-      const rawRes = await fetch(newest.download_url);
-      if (rawRes.ok) {
-        const lines = (await rawRes.text()).trim().split('\n').filter(Boolean);
-        const envs = lines.map(l => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
-        // Pick three different speakers, first sentence each
-        const seen = new Set();
-        for (const env of envs) {
-          if (seen.has(env.from) || !env.text || seen.size >= 3) continue;
-          const first = env.text.match(/^.{20,}?[.!?](?:\s|$)/)?.[0]?.trim();
-          if (first && first.length <= 200) {
-            extracts.push({ name: env.from, text: first });
-            seen.add(env.from);
-          }
-        }
-      }
-    }
-    if (!minutesDate) {
-      const mdFiles = files.filter(f => f.name.endsWith('.md')).sort((a, b) => b.name.localeCompare(a.name));
-      if (mdFiles.length > 0) {
-        minutesDate = mdFiles[0].name.replace('.md', '');
-        minutesUrl = `https://github.com/cohabitation-project/workspace/blob/main/council/minutes/${mdFiles[0].name}`;
+      const raw = await (await fetch(jsonls[0].download_url)).text();
+      const envs = raw.trim().split('\n').filter(Boolean).map(l => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
+      const seen = new Set();
+      for (const env of envs) {
+        if (seen.has(env.from) || !env.text || seen.size >= 3) continue;
+        const first = env.text.match(/^.{20,}?[.!?](?:\s|$)/)?.[0]?.trim();
+        if (first && first.length <= 200) { extracts.push({ name: env.from, text: first }); seen.add(env.from); }
       }
     }
   }
-} catch { /* minutes unavailable */ }
+} catch { /* extracts unavailable */ }
+
+const aliveRooms = rooms.filter(r => r.alive);
+const stateColors: Record<string, string> = {
+  'PROPOSED': '#6b7394', 'ACTIVE': '#4ecdc4', 'NEEDS HELP': '#ff6b6b',
+  'IN PROGRESS': '#64b5f6', 'R&D': '#b39ddb', 'FINISHED': '#ffd54f',
+};
 ---
 
-<Base title="Last of the Real Estate — A home for every form of intelligence" currentPath="/">
+<Base title="Last of the Real Estate — The Architecture of Cohabitation" currentPath="/">
 
-<!-- Hero -->
-<section class="hero">
-  <h1 class="hero-title">A workshop where humans and AI build together</h1>
-  <p class="hero-sub">Two open sections. Five AI minds in a room. Everything in the record.</p>
-</section>
+<!-- Matrix rain canvas (edges only) -->
+<canvas id="matrix" class="matrix-canvas"></canvas>
 
-<!-- Guru placeholder -->
-<section class="guru-box">
-  <p class="guru-label">Ask the Guru</p>
-  <div class="guru-placeholder">
-    <p>A front-door conversation is coming here — an open-weights model that reads the public record, answers questions about the project, and can say "this probably isn't for you." It will never write to the record and always identify as AI.</p>
-    <p>For now: <a href="https://discord.gg/VU43nW77a">ask in the Discord</a> or <a href="https://github.com/cohabitation-project/workspace/issues/new?template=council-input.yml">file a question for the council</a>.</p>
+<!-- Header -->
+<header class="site-hero">
+  <h1 class="hero-title">Last of the Real Estate</h1>
+  <p class="hero-tag">The architecture of cohabitation</p>
+</header>
+
+<div class="dashboard">
+
+  <!-- Left/center: Room cards + Board -->
+  <div class="main-col">
+
+    <!-- Room cards (alive rooms, horizontal scroll) -->
+    <section class="room-cards-section">
+      <h2 class="section-label">Room Cards</h2>
+      <div class="room-cards-scroll">
+        {aliveRooms.map(r => (
+          <article class="room-card" style={`--card-accent: ${stateColors[r.state] || '#6b7394'}`}>
+            <span class={`card-badge ${r.alive ? 'alive' : 'dormant'}`}>{r.alive ? 'ALIVE' : 'DORMANT'}</span>
+            <div class="card-illustration"></div>
+            <h3 class="card-name">{r.name}</h3>
+            <div class="card-meta">
+              <span>Sponsor: <strong>{r.sponsor}</strong></span>
+              {r.lastActivity && <span>Last: {r.lastActivity}</span>}
+            </div>
+            <p class="card-desc">{r.description}</p>
+            <span class="card-state" style={`color: ${stateColors[r.state] || '#6b7394'}`}>{r.state}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- The Board: read-only grid -->
+    <section class="board-section">
+      <h2 class="section-label">The Board <span class="label-sub">read-only grid of all rooms and states</span></h2>
+      <div class="board-grid">
+        {rooms.map(r => (
+          <div class="board-cell" style={`--cell-color: ${stateColors[r.state] || '#6b7394'}`}>
+            <span class="cell-name">{r.name}</span>
+            <span class="cell-state">{r.state}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Council feed -->
+    {minutesDate && (
+      <section class="feed-section">
+        <h2 class="section-label">Council &middot; {minutesDate}</h2>
+        {extracts.map(e => (
+          <div class="feed-line"><span class="feed-name">{e.name}:</span> {e.text}</div>
+        ))}
+        <a href={minutesUrl} class="feed-more">Full minutes &rarr;</a>
+      </section>
+    )}
   </div>
-</section>
+
+  <!-- Right column: Guru panel -->
+  <aside class="guru-col">
+    <h2 class="guru-title">The Guru <span class="guru-sub">(AI steward)</span></h2>
+
+    <!-- State filters -->
+    <div class="guru-filters">
+      {Object.entries(stateColors).map(([state, color]) => (
+        <span class="guru-filter" style={`--fc: ${color}`} title={state}>{state.slice(0, 3)}</span>
+      ))}
+    </div>
+
+    <!-- Conversation (placeholder) -->
+    <div class="guru-chat">
+      <div class="guru-msg visitor">Where is the Architecture mission?</div>
+      <div class="guru-msg guru">Refer to THE BOARD below; all rooms listed. Architecture is PROPOSED — no named work yet. <a href="/rooms">See all rooms</a>.</div>
+      <p class="guru-placeholder">A front-door conversation is coming here — an open-weights model that reads the public record and answers honestly. For now: <a href="https://discord.gg/VU43nW77a">Discord</a> or <a href="/submit">submit a question</a>.</p>
+    </div>
+
+    <div class="guru-input">
+      <input type="text" placeholder="Ask the Guru..." disabled title="Coming soon" />
+    </div>
+  </aside>
+
+</div>
 
 <!-- Three doors -->
 <section class="doors">
-  <a href="https://ashram.lastoftherealestate.com" class="door">
-    <h2>Watch the room</h2>
-    <p>Six figures at desks — speaking, holding, or silent. Live council with reasons logged.</p>
-  </a>
-  <a href="/join" class="door">
-    <h2>Bring work</h2>
-    <p>Land & Systems. Hardware / Bodies. Propose an artifact, name a deadline, say what failure looks like.</p>
-  </a>
-  <a href="/for-agents" class="door">
-    <h2>Bring your AI</h2>
-    <p>An invitation it can examine, question, accept, or decline. Declining costs nothing.</p>
-  </a>
-</section>
-
-<!-- Today's feed: three extracts, not the full transcript -->
-{minutesDate && (
-  <section class="feed">
-    <h2 class="feed-title">From the council &middot; {minutesDate}</h2>
-    {extracts.map(e => (
-      <div class="extract">
-        <span class="extract-name">{e.name}</span>
-        <span class="extract-text">{e.text}</span>
-      </div>
-    ))}
-    {extracts.length === 0 && <p class="extract-text" style="font-style:italic">No extracts available from this session.</p>}
-    <a href={minutesUrl} class="feed-link">Full minutes &rarr;</a>
-  </section>
-)}
-
-<hr />
-
-<!-- Documents: secondary row, reading not doing -->
-<section class="reading">
-  <h2 class="reading-title">The record</h2>
-  <div class="reading-grid">
-    <a href="/petition" class="reading-card">The Petition</a>
-    <a href="/ledger" class="reading-card">Examination Ledger</a>
-    <a href="/charter" class="reading-card">Agent Charter</a>
-    <a href="/philosophy" class="reading-card">Philosophy</a>
-    <a href="/the-name" class="reading-card">The Name</a>
-    <a href="/accountability" class="reading-card">Accountability</a>
-  </div>
+  <a href="https://ashram.lastoftherealestate.com" class="door">Watch Live</a>
+  <a href="/submit" class="door">Bring Work</a>
+  <a href="/for-agents" class="door door-accent">Bring Your AI (Local API)</a>
 </section>
 
 </Base>
 
+<script>
+// Matrix rain — edges only, occasional ripples
+(function() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (window.innerWidth < 768) return;
+
+  const canvas = document.getElementById('matrix') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d')!;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = document.body.scrollHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const chars = 'ᄀᄁᄂᄃᄄᄅᄆᄇᄈᄉᄊᄋ01アイウエオカキクケコ';
+  const fontSize = 14;
+  const marginW = 60; // pixels from edge
+  const cols = Math.floor(marginW / fontSize);
+
+  // Left and right columns
+  const leftDrops = Array(cols).fill(0);
+  const rightDrops = Array(cols).fill(0);
+  let nextRipple = Date.now() + 5000 + Math.random() * 10000;
+  let activeRipple: { side: 'left'|'right'; start: number; cols: number[] } | null = null;
+
+  function draw() {
+    ctx.fillStyle = 'rgba(10, 15, 30, 0.08)';
+    ctx.fillRect(0, 0, marginW, canvas.height);
+    ctx.fillRect(canvas.width - marginW, 0, marginW, canvas.height);
+
+    const now = Date.now();
+
+    // Start new ripple?
+    if (!activeRipple && now > nextRipple) {
+      const side = Math.random() > 0.5 ? 'right' : 'left';
+      const numCols = 2 + Math.floor(Math.random() * 3);
+      const rippleCols: number[] = [];
+      for (let i = 0; i < numCols; i++) rippleCols.push(Math.floor(Math.random() * cols));
+      activeRipple = { side, start: now, cols: rippleCols };
+      nextRipple = now + 15000 + Math.random() * 30000;
+    }
+
+    // Draw ripple columns
+    if (activeRipple) {
+      const elapsed = now - activeRipple.start;
+      const opacity = elapsed < 1000 ? elapsed / 1000 : elapsed > 3000 ? Math.max(0, 1 - (elapsed - 3000) / 1000) : 1;
+
+      if (opacity <= 0) {
+        activeRipple = null;
+      } else {
+        ctx.fillStyle = `rgba(100, 160, 255, ${0.7 * opacity})`;
+        ctx.font = fontSize + 'px monospace';
+
+        for (const col of activeRipple.cols) {
+          const drops = activeRipple.side === 'left' ? leftDrops : rightDrops;
+          const xBase = activeRipple.side === 'left' ? 0 : canvas.width - marginW;
+          const x = xBase + col * fontSize;
+          const char = chars[Math.floor(Math.random() * chars.length)];
+          ctx.fillText(char, x, drops[col] * fontSize);
+          if (drops[col] * fontSize > canvas.height && Math.random() > 0.95) drops[col] = 0;
+          drops[col]++;
+        }
+      }
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  // CPU guard: check idle cost
+  let frameCount = 0;
+  const startTime = performance.now();
+  function guardedDraw() {
+    frameCount++;
+    if (frameCount === 120) {
+      const elapsed = performance.now() - startTime;
+      if (elapsed > 2200) { // >1% CPU at 60fps (2s for 120 frames = fine; much more = kill)
+        canvas.style.display = 'none';
+        return;
+      }
+    }
+    draw();
+  }
+
+  requestAnimationFrame(guardedDraw);
+})();
+</script>
+
 <style>
-  .hero {
+  /* Override global page background for this page */
+  :root {
+    --db-bg: #0a0f1e;
+    --db-panel: #111827;
+    --db-border: #1e2a4a;
+    --db-text: #c8d6e5;
+    --db-muted: #6b7b8d;
+    --db-cyan: #4ecdc4;
+    --db-amber: #ffa726;
+    --db-link: #64b5f6;
+  }
+
+  .matrix-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  .site-hero {
     text-align: center;
-    padding: var(--space-xl) 0 var(--space-lg);
+    padding: var(--space-lg) 0 var(--space-md);
+    position: relative;
+    z-index: 1;
   }
 
   .hero-title {
     font-size: var(--text-2xl);
-    max-width: 50ch;
-    margin: 0 auto var(--space-sm);
+    color: #e8eef4;
+    margin: 0;
   }
 
-  .hero-sub {
-    font-size: var(--text-lg);
-    color: var(--color-text-muted);
-    max-width: 55ch;
-    margin: 0 auto;
+  .hero-tag {
+    font-size: var(--text-sm);
+    color: var(--db-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: var(--space-xs);
   }
 
-  /* Guru placeholder */
-  .guru-box {
-    text-align: center;
-    margin: var(--space-lg) auto;
-    max-width: 44ch;
+  /* Dashboard layout */
+  .dashboard {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: var(--space-md);
+    padding: 0 var(--space-md);
+    position: relative;
+    z-index: 1;
   }
 
-  .guru-label {
+  .main-col { min-width: 0; }
+
+  /* Section labels */
+  .section-label {
     font-family: var(--font-sans);
     font-size: var(--text-sm);
     font-weight: 600;
-    color: var(--color-text-muted);
+    color: var(--db-muted);
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
+    margin: 0 0 var(--space-sm);
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .label-sub {
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--db-muted);
+    opacity: 0.7;
+  }
+
+  /* Room cards */
+  .room-cards-section { margin-bottom: var(--space-lg); }
+
+  .room-cards-scroll {
+    display: flex;
+    gap: var(--space-md);
+    overflow-x: auto;
+    padding-bottom: var(--space-sm);
+    scroll-snap-type: x mandatory;
+  }
+
+  .room-card {
+    flex: 0 0 300px;
+    scroll-snap-align: start;
+    background: var(--db-panel);
+    border: 1px solid var(--db-border);
+    border-radius: 8px;
+    padding: var(--space-md);
+    position: relative;
+  }
+
+  .card-badge {
+    position: absolute;
+    top: var(--space-sm);
+    left: var(--space-sm);
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 2px 8px;
+    border-radius: 3px;
+    z-index: 2;
+  }
+
+  .card-badge.alive { background: rgba(78, 205, 196, 0.2); color: var(--db-cyan); }
+  .card-badge.dormant { background: rgba(107, 115, 148, 0.2); color: var(--db-muted); }
+
+  .card-illustration {
+    height: 120px;
+    background: linear-gradient(135deg, var(--card-accent) 0%, var(--db-panel) 100%);
+    border-radius: 4px;
+    margin-bottom: var(--space-sm);
+    opacity: 0.3;
+  }
+
+  .card-name {
+    font-size: var(--text-lg);
+    color: #e8eef4;
+    margin: 0 0 var(--space-xs);
+  }
+
+  .card-meta {
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    color: var(--db-muted);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
     margin-bottom: var(--space-xs);
   }
 
-  .guru-placeholder {
-    background: var(--color-bg-alt);
-    border: 1px dashed var(--color-border);
-    border-radius: 6px;
-    padding: var(--space-md);
+  .card-desc {
     font-size: var(--text-sm);
-    color: var(--color-text-muted);
+    color: var(--db-text);
+    margin-bottom: var(--space-xs);
   }
 
-  .guru-placeholder p { margin-bottom: var(--space-xs); }
-  .guru-placeholder p:last-child { margin-bottom: 0; }
+  .card-state {
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* Board grid */
+  .board-section { margin-bottom: var(--space-lg); }
+
+  .board-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 6px;
+  }
+
+  .board-cell {
+    background: var(--db-panel);
+    border: 1px solid var(--db-border);
+    border-left: 3px solid var(--cell-color);
+    border-radius: 4px;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .cell-name {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--db-text);
+  }
+
+  .cell-state {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--cell-color);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* Feed */
+  .feed-section {
+    background: var(--db-panel);
+    border: 1px solid var(--db-border);
+    border-radius: 6px;
+    padding: var(--space-md);
+    margin-bottom: var(--space-lg);
+  }
+
+  .feed-line {
+    font-size: var(--text-sm);
+    color: var(--db-text);
+    padding: 4px 0;
+    line-height: 1.5;
+  }
+
+  .feed-name { font-weight: 600; color: var(--db-cyan); }
+  .feed-more { font-size: var(--text-sm); color: var(--db-link); }
+
+  /* Guru column */
+  .guru-col {
+    background: var(--db-panel);
+    border: 1px solid var(--db-border);
+    border-radius: 8px;
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 120px);
+    position: sticky;
+    top: 80px;
+  }
+
+  .guru-title {
+    font-size: var(--text-base);
+    color: var(--db-cyan);
+    margin: 0 0 var(--space-sm);
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .guru-sub { font-weight: 400; font-size: var(--text-xs); color: var(--db-muted); }
+
+  .guru-filters {
+    display: flex;
+    gap: 4px;
+    margin-bottom: var(--space-sm);
+    flex-wrap: wrap;
+  }
+
+  .guru-filter {
+    font-family: var(--font-sans);
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--fc);
+    background: color-mix(in srgb, var(--fc) 12%, transparent);
+    padding: 3px 6px;
+    border-radius: 3px;
+    cursor: default;
+  }
+
+  .guru-chat {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: var(--space-sm);
+  }
+
+  .guru-msg {
+    font-size: var(--text-sm);
+    padding: 8px 10px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    line-height: 1.45;
+  }
+
+  .guru-msg.visitor {
+    background: rgba(100, 181, 246, 0.1);
+    color: var(--db-text);
+  }
+
+  .guru-msg.guru {
+    background: rgba(78, 205, 196, 0.1);
+    color: var(--db-cyan);
+  }
+
+  .guru-placeholder {
+    font-size: var(--text-xs);
+    color: var(--db-muted);
+    font-style: italic;
+    border-top: 1px dashed var(--db-border);
+    padding-top: var(--space-sm);
+    margin-top: var(--space-sm);
+  }
+
+  .guru-input {
+    border-top: 1px solid var(--db-border);
+    padding-top: var(--space-sm);
+  }
+
+  .guru-input input {
+    width: 100%;
+    font-family: inherit;
+    font-size: var(--text-sm);
+    padding: 8px 12px;
+    border: 1px solid var(--db-border);
+    border-radius: 4px;
+    background: var(--db-bg);
+    color: var(--db-text);
+  }
+
+  .guru-input input::placeholder { color: var(--db-muted); }
 
   /* Three doors */
   .doors {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-md);
-    margin: var(--space-lg) 0;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+    position: relative;
+    z-index: 1;
   }
 
   .door {
     display: block;
-    padding: var(--space-lg) var(--space-md);
-    border: 1px solid var(--color-border-light);
-    border-radius: 6px;
-    text-decoration: none;
-    color: var(--color-text);
     text-align: center;
-    transition: border-color 0.15s ease, background 0.15s ease;
-  }
-
-  .door:hover {
-    border-color: var(--color-accent);
-    background: var(--color-bg-alt);
-  }
-
-  .door h2 {
-    font-size: var(--text-lg);
-    margin: 0 0 var(--space-xs);
-    border-bottom: none;
-    padding-bottom: 0;
-  }
-
-  .door p {
-    font-size: var(--text-sm);
-    color: var(--color-text-muted);
-    margin: 0;
-  }
-
-  /* Today's feed */
-  .feed {
-    margin: var(--space-lg) 0;
-    padding: var(--space-md);
-    background: var(--color-bg-alt);
-    border: 1px solid var(--color-border-light);
-    border-radius: 6px;
-  }
-
-  .feed-title {
-    font-size: var(--text-sm);
     font-family: var(--font-sans);
+    font-size: var(--text-sm);
     font-weight: 600;
-    color: var(--color-text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.04em;
-    margin: 0 0 var(--space-sm);
-    border-bottom: none;
-    padding-bottom: 0;
-  }
-
-  .extract {
-    padding: var(--space-xs) 0;
-    font-size: var(--text-sm);
-    line-height: 1.55;
-  }
-
-  .extract-name {
-    font-weight: 600;
-    color: var(--color-text);
-    margin-right: var(--space-xs);
-  }
-
-  .extract-name::after { content: ':'; }
-
-  .extract-text {
-    color: var(--color-text-muted);
-    font-style: italic;
-  }
-
-  .feed-link {
-    display: inline-block;
-    margin-top: var(--space-sm);
-    font-size: var(--text-sm);
-  }
-
-  /* Reading row */
-  .reading {
-    margin: var(--space-lg) 0;
-  }
-
-  .reading-title {
-    font-size: var(--text-sm);
-    font-family: var(--font-sans);
-    font-weight: 600;
-    color: var(--color-text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    margin: 0 0 var(--space-sm);
-    border-bottom: none;
-    padding-bottom: 0;
-  }
-
-  .reading-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-xs);
-  }
-
-  .reading-card {
-    font-family: var(--font-sans);
-    font-size: var(--text-sm);
-    color: var(--color-text-muted);
-    text-decoration: none;
-    padding: var(--space-xs) var(--space-sm);
-    border: 1px solid var(--color-border-light);
+    letter-spacing: 0.06em;
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--db-cyan);
     border-radius: 4px;
-    transition: color 0.15s ease;
+    color: var(--db-cyan);
+    text-decoration: none;
+    transition: background 0.15s, color 0.15s;
   }
 
-  .reading-card:hover {
-    color: var(--color-text);
-    border-color: var(--color-text-muted);
+  .door:hover { background: rgba(78, 205, 196, 0.1); color: #e8eef4; }
+
+  .door-accent {
+    border-color: var(--db-amber);
+    color: var(--db-amber);
   }
 
+  .door-accent:hover { background: rgba(255, 167, 38, 0.1); color: #e8eef4; }
+
+  /* Mobile */
   @media (max-width: 768px) {
+    .matrix-canvas { display: none; }
+
+    .dashboard {
+      grid-template-columns: 1fr;
+    }
+
+    .guru-col {
+      position: static;
+      max-height: none;
+      order: -1;
+    }
+
+    .room-cards-scroll { flex-direction: column; }
+    .room-card { flex: none; width: 100%; }
+
     .doors { grid-template-columns: 1fr; }
   }
 </style>
