@@ -1,4 +1,5 @@
 ---
+import { getRooms } from '../../lib/rooms';
 import Base from '../../layouts/Base.astro';
 
 interface RoomItem { title: string; list: string; date: string; note: string; blocker?: string; drop_reason?: string; revive_condition?: string; }
@@ -9,18 +10,7 @@ interface Room {
 }
 
 export async function getStaticPaths() {
-  let rooms: Room[] = [];
-  try {
-    const res = await fetch('https://api.github.com/repos/cohabitation-project/workspace/contents/rooms',
-      { headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'petition-site-build' } });
-    if (res.ok) {
-      const files: { name: string; download_url: string }[] = await res.json();
-      for (const f of files.filter(f => f.name.endsWith('.json'))) {
-        const data = await (await fetch(f.download_url)).json();
-        rooms.push(data as Room);
-      }
-    }
-  } catch {}
+  const rooms = await getRooms();
   return rooms.map(r => ({ params: { slug: r.slug || r.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') }, props: { room: r } }));
 }
 

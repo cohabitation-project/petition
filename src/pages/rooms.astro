@@ -1,4 +1,5 @@
 ---
+import { getRooms } from '../lib/rooms';
 import Base from '../layouts/Base.astro';
 
 interface Room {
@@ -6,17 +7,7 @@ interface Room {
   lastActivity: string; tags: string[]; description: string;
 }
 
-let rooms: Room[] = [];
-try {
-  const res = await fetch('https://api.github.com/repos/cohabitation-project/workspace/contents/rooms',
-    { headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'petition-site-build' } });
-  if (res.ok) {
-    const files: { name: string; download_url: string }[] = await res.json();
-    for (const f of files.filter(f => f.name.endsWith('.json'))) {
-      rooms.push(await (await fetch(f.download_url)).json() as Room);
-    }
-  }
-} catch {}
+const rooms = await getRooms();
 
 const SH: Record<string,string> = {
   'PROPOSED':'#8A9BC4','ACTIVE':'#4ADE9B','NEEDS HELP':'#F87171',

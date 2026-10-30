@@ -1,18 +1,10 @@
 ---
+import { getRooms } from '../lib/rooms';
 import Base from '../layouts/Base.astro';
 
 // Fetch rooms
 interface Room { name: string; state: string; sponsor: string; alive: boolean; lastActivity: string; tags: string[]; description: string; }
-let rooms: Room[] = [];
-try {
-  const res = await fetch('https://api.github.com/repos/cohabitation-project/workspace/contents/rooms',
-    { headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'petition-site-build' } });
-  if (res.ok) {
-    const files: { name: string; download_url: string }[] = await res.json();
-    for (const f of files.filter(f => f.name.endsWith('.json')))
-      rooms.push(await (await fetch(f.download_url)).json() as Room);
-  }
-} catch {}
+const rooms = await getRooms();
 
 const SC: Record<string,string> = {
   'PROPOSED':'var(--color-proposed)','ACTIVE':'var(--color-active)','NEEDS HELP':'var(--color-needs-help)',
@@ -74,9 +66,9 @@ const latestActivity = rooms.map(r => r.lastActivity).filter(Boolean).sort().pop
 
 <!-- Three doors -->
 <nav class="hp-doors">
-  <a href="https://ashram.lastoftherealestate.com" class="hp-door">Watch Live</a>
+  <a href="https://github.com/cohabitation-project/workspace/tree/main/council/minutes" class="hp-door">Read the Council</a>
   <a href="/submit" class="hp-door">Bring Work</a>
-  <a href="/for-agents" class="hp-door">Bring Your AI (Local API)</a>
+  <a href="/for-agents" class="hp-door">Bring Your AI</a>
 </nav>
 
 </Base>

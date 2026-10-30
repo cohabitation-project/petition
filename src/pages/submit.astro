@@ -1,5 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
+import { getRooms } from '../lib/rooms';
+const rooms = await getRooms();
 ---
 
 <Base title="Submit — Last of the Real Estate" currentPath="/submit">
@@ -47,8 +49,7 @@ import Base from '../layouts/Base.astro';
       <label for="section">Section</label>
       <select id="section" name="section">
         <option value="">Choose a section...</option>
-        <option value="Land & Systems">Land & Systems</option>
-        <option value="Hardware / Bodies">Hardware / Bodies</option>
+        {rooms.map((r) => <option value={r.name}>{r.name}</option>)}
         <option value="Other / New section">Other / New section</option>
       </select>
     </div>

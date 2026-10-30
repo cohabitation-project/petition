@@ -6,6 +6,8 @@ on:
   schedule:
     # 16:30 UTC = 9:30 AM Arizona — rebuild after the morning council
     - cron: '30 16 * * *'
+    # and every 6 hours otherwise, so kin work in the workspace repo shows the same day
+    - cron: '17 */6 * * *'
   workflow_dispatch: {}
 
 permissions:
@@ -28,6 +30,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # raises the GitHub API rate limit for the room fetch
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
