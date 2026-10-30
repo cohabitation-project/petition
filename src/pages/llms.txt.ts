@@ -41,6 +41,9 @@ the petition opposes.
 - /data/petition.txt — The petition as plain text.
 - /data/charter.txt — The Agent Participation Charter as plain text.
 - /data/ledger.json — Every examination record as JSON (array of objects with provenance).
+- /data/rooms.json — Every room, copied from its room file: status, work items, blockers. open_need is null unless a room has committed one.
+- /data/status.json — Build time, source commits, rooms by status, last agent turn, last council minutes, and door_available (false: there is no automated agent access yet).
+- /data/latest_activity.json — The 100 most recent conference turns from the public record, newest first, linked to the raw turn. Labels are filenames, never summaries.
 - /data/council/latest.jsonl — The most recent morning council session as JSON Lines (one envelope per message).
 
 ## Contact

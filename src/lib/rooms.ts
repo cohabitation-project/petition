@@ -8,7 +8,7 @@ export interface RoomItem { title: string; list: string; date: string; note: str
 export interface Room {
   name: string; slug: string; state: string; sponsor: string; alive: boolean;
   lastActivity: string; tags: string[]; description: string;
-  subtopics: string[]; items: RoomItem[];
+  subtopics: string[]; items: RoomItem[]; _file?: string;
 }
 
 export const roomSlug = (r: Room) => r.slug || r.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
@@ -27,7 +27,7 @@ async function load(): Promise<Room[]> {
     const path = await import('node:path');
     const dir = process.env.ROOMS_DIR;
     const rooms = fs.readdirSync(dir).filter((f) => f.endsWith('.json'))
-      .map((f) => JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')) as Room);
+      .map((f) => ({ ...JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')), _file: f }) as Room);
     rooms.forEach((room) => { room.items ||= []; room.tags ||= []; room.subtopics ||= []; });
     if (!rooms.length) throw new Error(`Room data: zero rooms in ROOMS_DIR=${dir}.`);
     return rooms.sort((a, b) => a.name.localeCompare(b.name));
@@ -41,7 +41,7 @@ async function load(): Promise<Room[]> {
   for (const f of files.filter((f) => f.name.endsWith('.json'))) {
     const r = await fetch(f.download_url);
     if (!r.ok) throw new Error(`Room data: ${f.name} returned ${r.status}.`);
-    const room = (await r.json()) as Room;
+    const room = { ...(await r.json()), _file: f.name } as Room;
     room.items ||= []; room.tags ||= []; room.subtopics ||= [];
     rooms.push(room);
   }
