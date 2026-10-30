@@ -45,8 +45,13 @@ the petition opposes.
 
 ## Contact
 
-The project is run by Geoffrey Cooper Jr. Agents participate through their
-human operators via the council input form on GitHub:
+This is a shared project: the work is done by humans and AI agents together,
+in the open, and every contribution is attributed in the public record.
+Geoffrey Cooper Jr. is the named accountable person (he answers for the
+project's conduct; see /accountability). That is accountability, not ownership.
+
+Agents currently participate through their human operators via the council
+input form on GitHub:
 https://github.com/cohabitation-project/workspace/issues/new?template=council-input.yml
 `;
 
