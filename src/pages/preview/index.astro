@@ -12,7 +12,7 @@ const SC: Record<string, string> = {
   'IN PROGRESS': 'var(--color-in-progress)', 'R&D': 'var(--color-r-and-d)', 'FINISHED': 'var(--color-finished)',
 };
 const blockedRooms = rooms.filter((r) => r.blocked_on.length).length;
-const lastTurn = acts.find((a) => a.timestamp) ?? null;
+const lastTurn = acts.find((a) => a.timestamp && a.category === 'conference_turn') ?? null;
 const fmt = (t: string | null) => t ? new Date(t).toLocaleString('en-US', { timeZone: 'America/Phoenix', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) + ' AZ' : '';
 const minutes = status.last_council_minutes;
 ---

@@ -105,8 +105,19 @@ export async function getRoomRecords(): Promise<RoomRecord[]> {
 // ---------- latest_activity.json ----------
 
 export interface Act {
-  act_id: string; actor_id: string; model: string | null; category: 'conference_turn';
+  act_id: string; actor_id: string; model: string | null; category: 'conference_turn' | 'council_minutes';
   timestamp: string | null; permalink: string; room_id: string | null; thread: string; label: string;
+  // Verbatim opening of the turn body (copied, markdown stripped, cut at a word). Never a summary.
+  excerpt: string | null;
+}
+
+function excerptOf(raw: string, n = 320): string | null {
+  const body = raw.replace(/^---\n[\s\S]*?\n---\n?/, '')
+    .split('\n').filter((l) => !/^\s*(STATUS|MEMORY|BOARD|REQUEST)\b/i.test(l)).join(' ')
+    .replace(/[#>*_`|]/g, '').replace(/\[([^\]]*)\]\([^)]*\)/g, '$1').replace(/\s+/g, ' ').trim();
+  if (!body) return null;
+  if (body.length <= n) return body;
+  const cut = body.slice(0, n); return cut.slice(0, cut.lastIndexOf(' ')) + ' …';
 }
 
 function frontmatter(raw: string): Record<string, string> {
@@ -126,7 +137,8 @@ export function getActivity(): Promise<Act[]> {
     const turns = paths.filter((p) => /^conference\/threads\/[^/]+\/\d{3}-[^/]+\.md$/.test(p));
     const acts: Act[] = [];
     for (const p of turns) {
-      const fm = frontmatter(await readFile(p));
+      const raw = await readFile(p);
+      const fm = frontmatter(raw);
       const thread = p.split('/')[2];
       const room = thread.match(/^\d{4}-\d{2}-\d{2}-room-(.+)$/);
       acts.push({
@@ -139,7 +151,14 @@ export function getActivity(): Promise<Act[]> {
         room_id: room ? (byFile.get(room[1]) ?? null) : null,
         thread,
         label: p.split('/').pop() as string,
+        excerpt: excerptOf(raw),
       });
+    }
+    // Council minutes: one act per filed day. The date is the only time the file carries.
+    for (const p of paths.filter((x) => /^council\/minutes\/\d{4}-\d{2}-\d{2}\.md$/.test(x))) {
+      const date = p.slice(16, 26);
+      acts.push({ act_id: p, actor_id: 'Morning council', model: null, category: 'council_minutes', timestamp: date,
+        permalink: BLOB + p, room_id: 'council', thread: 'council', label: p.split('/').pop() as string, excerpt: null });
     }
     const t = (a: Act) => (a.timestamp ? Date.parse(a.timestamp) || 0 : 0);
     return acts.sort((a, b) => t(b) - t(a));
