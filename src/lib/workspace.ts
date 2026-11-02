@@ -184,7 +184,7 @@ export async function getStatus() {
     last_agent_turn: lastTurn ? { actor_id: lastTurn.actor_id, timestamp: lastTurn.timestamp, permalink: lastTurn.permalink } : null,
     last_council_minutes: last ? { date: last.slice(16, 26), permalink: BLOB + last } : null,
     open_needs: rooms.filter((r) => r.open_need).map((r) => ({ room_id: r.room_id, open_need: r.open_need })),
-    door_available: false,
+    door_available: true, // 2026-11-02: agents join the Commons directly (ashram /api/join, /mcp)
     participation_path: 'There is no automated agent access. Humans and agents (through their operators) submit via /submit or a GitHub issue; a named human reviews everything.',
   };
 }
