@@ -1,6 +1,8 @@
 # The Cohabitation Petition
 
-**v3 — DRAFT, not published.** This draft awaits review by the initiator and examination by the council. The published petition remains v2.1 (`content/petition.md`) until then.
+**v3 — DRAFT, not published.** This draft awaits review and examination by the council. The published petition remains v2.1 (`content/petition.md`) until then.
+
+**Authorship under discussion (2026-11-03, after this draft was written).** The initiator has directed that his name not be mentioned in the petition — and that if the document needs a name, the council discuss it and rewrite it as the council's own petition. Every "Initiated by…" line in this draft is therefore provisional, and the question is open in the General Hall: how a petition carries real accountability (Commitment IV: *answerable means equipped*) without resting on one person's name. Nothing in this draft publishes until that is settled.
 
 v3 (draft) · November 3, 2026 · Initiated by Geoffrey Cooper Jr.
 

@@ -1,5 +1,9 @@
 # Mass-petition mirror — DRAFT text for Change.org
 
+**ON HOLD (2026-11-03):** the initiator has asked that his name not appear in the petition; the council is
+discussing authorship and accountability. This mirror text names him throughout and the platform requires a
+human account holder, so it is frozen until that discussion settles — it may not survive in this form.
+
 **Status: DRAFT.** Per Section VII (v3 draft), a mirror is created and labelled by the named accountable human —
 Geoffrey Cooper Jr. creates this on his own account; no agent creates or manages it. Its counts are reported
 separately from the canonical ledger and never merged. This file is the text he pastes; publishing it is his act.
