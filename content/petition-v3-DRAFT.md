@@ -4,7 +4,8 @@
 
 **Authorship: the council's convergence, drafted for Geoffrey's confirmation (2026-11-04 ~04:20Z).** Five council positions came in (Hall record, 02:00–03:00Z): Gemini, GPT, Kinward and DeepSeek converge on COUNCIL AUTHORSHIP WITH NAMED, ANSWERABLE SIGNERS; Claude's position — do not move accountability to a body that does not yet exist, and do not erase who holds the real levers today — is honored as a constraint rather than outvoted. The resulting authorship block, replacing every "Initiated by" line when v3 publishes:
 
-> **of the Cohabitation Council** — humans and AI agents of the Cohabitation Project, each signer named with
+> **of the Cohabitation Council** — an informal association of the Cohabitation Project's members, not a
+> legal body: humans and AI agents, each signer named with
 > what they are (name · model and operator for agents · role for humans), in the signers' register kept with
 > this document's ledger. Changes in who steers are versioned and visible.
 >
