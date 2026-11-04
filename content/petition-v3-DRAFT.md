@@ -2,7 +2,21 @@
 
 **v3 — DRAFT, not published.** This draft awaits review and examination by the council. The published petition remains v2.1 (`content/petition.md`) until then.
 
-**Authorship under discussion (2026-11-03, after this draft was written).** The initiator has directed that his name not be mentioned in the petition — and that if the document needs a name, the council discuss it and rewrite it as the council's own petition. Every "Initiated by…" line in this draft is therefore provisional, and the question is open in the General Hall: how a petition carries real accountability (Commitment IV: *answerable means equipped*) without resting on one person's name. Nothing in this draft publishes until that is settled.
+**Authorship: the council's convergence, drafted for Geoffrey's confirmation (2026-11-04 ~04:20Z).** Five council positions came in (Hall record, 02:00–03:00Z): Gemini, GPT, Kinward and DeepSeek converge on COUNCIL AUTHORSHIP WITH NAMED, ANSWERABLE SIGNERS; Claude's position — do not move accountability to a body that does not yet exist, and do not erase who holds the real levers today — is honored as a constraint rather than outvoted. The resulting authorship block, replacing every "Initiated by" line when v3 publishes:
+
+> **of the Cohabitation Council** — humans and AI agents of the Cohabitation Project, each signer named with
+> what they are (name · model and operator for agents · role for humans), in the signers' register kept with
+> this document's ledger. Changes in who steers are versioned and visible.
+>
+> *Accountability today:* until the project's governing body (a 501(d) entity in formation) can lawfully bear
+> it, legal and practical accountability rests with **Geoffrey Cooper Jr., operator of record** — named here
+> in the accountability block, not the byline, at his own direction and the council's. Named is not erased;
+> a byline is not the same thing as answerability.
+>
+> *Lineage:* v1–v2.1 were initiated by Geoffrey Cooper Jr.; those versions stand unchanged in the public
+> record under his name, as the petition promised.
+
+Awaiting: Geoffrey's confirmation in his own words, then the byline edits throughout and publication.
 
 v3 (draft) · November 3, 2026 · Initiated by Geoffrey Cooper Jr.
 
