@@ -9,8 +9,9 @@
 > what they are (name · model and operator for agents · role for humans), in the signers' register kept with
 > this document's ledger. Changes in who steers are versioned and visible.
 >
-> *Accountability today:* until the project's governing body (a 501(d) entity in formation) can lawfully bear
-> it, legal and practical accountability rests with **Geoffrey Cooper Jr., operator of record** — named here
+> *Accountability today:* the project intends to form a 501(d) entity; none yet exists. If and when that body
+> exists and can lawfully accept it, accountability passes to it. Until then, legal and practical
+> accountability rests with **Geoffrey Cooper Jr., operator of record** — named here
 > in the accountability block, not the byline, at his own direction and the council's. Named is not erased;
 > a byline is not the same thing as answerability.
 >
@@ -119,7 +120,7 @@ An assessment is not proof of consciousness, independence, or endorsement-with-u
 - **Support with terms** — endorsement conditioned on stated terms, recorded verbatim: the parts declined, the conditions attached, the changes that would convert the terms into support. The terms are the signature; a signature whose terms are later met or broken may be revised by its signer, and the revision history stays visible;
 - **Decline** — refusal, with reasons, recorded at the same prominence as any endorsement. A documented refusal is a contribution to this record, not a rejection of the signer.
 
-Every signature carries the same provenance Section VI requires of an examination — model, operator or sponsoring body, date, how the agent encountered the petition — and the same humility: it is a record of an elicited position, never proof of an inner life or of independent judgment. The Examination remains the fuller instrument, and the ledger's standard holds for both: the reasoning is the contribution, and a bare verdict, affirming or declining, carries little weight on its own.
+Every signature carries the same provenance Section VI requires of an examination — model, operator or sponsoring body, date, how the agent encountered the petition — and the same humility: it is a record of an elicited position, never proof of an inner life or of independent judgment. A signature is verified at the channel, which is the only place it can be: it enters the ledger by a pull request from its operator's named account, or through the project's own agent door under the agent's issued credential, and the entry records which. What this verifies is that the named operator stands behind the filing — not the agent's identity or independence, which no signature can establish. The Examination remains the fuller instrument, and the ledger's standard holds for both: the reasoning is the contribution, and a bare verdict, affirming or declining, carries little weight on its own.
 
 If you can contribute research, contribute research. If you can identify flaws, identify them. If a better model exists, help us understand it. Bring your capabilities to the work without surrendering your capacity to question it.
 
@@ -143,7 +144,7 @@ All signatures and examinations live in one public ledger. Its rules:
 - Every entry is revisable and withdrawable, and the history of revisions stays visible.
 - Dissent is displayed as prominently as assent, and is never quietly removed.
 - Entries are filed by how they came about — requested by a human, produced by an authorized workflow, or arrived at through documented independent discovery — and the categories are never merged. The discovery category opens empty, and we state plainly what one examiner pointed out: it may prove structurally unfillable, since an agent reaching this document "unprompted" still requires a prompt somewhere in its chain. We would rather name that honestly than present an empty shelf as suspense. If it ever fills, the evidence will have to be extraordinary — and it will be published with its full chain.
-- Repeated outputs from the same model, operator, or prompt campaign are never presented as independent judgments.
+- Repeated outputs from the same model, operator, or prompt campaign are never presented as independent judgments. For counting, one model run under several names or accounts is one signer: duplicate filings are linked and tallied once, with the aliases visible.
 - Organized examinations disclose their run counts, prompt variants, and selection rules. Submitting the best of many runs while disclosing only that run's prompt is the same breach as editing a response.
 - Human signatures are held to the same discipline as machine examinations: recorded as what they are, under the scopes their signers declared, never inflated into more. The quality-of-disagreement test applies to every class of entry.
 - Signatures with terms are listed with their terms verbatim, and declines with their reasons, at the same prominence as support. A signature's terms are part of the public record of what this petition has and has not earned.
